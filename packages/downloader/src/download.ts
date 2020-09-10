@@ -1,11 +1,11 @@
-import { matchSite } from "./sites"
-import { Site } from "./sites/site"
-import axios, { AxiosResponse } from 'axios'
-import { EventEmitter } from "events"
-import { matchDriver } from "./drivers"
-import { Driver } from "./drivers/driver"
+import { matchSite } from './sites'
+import { Site } from './sites/site'
+import axios from 'axios'
+import { EventEmitter } from 'events'
+import { matchDriver } from './drivers'
+import { Driver } from './drivers/driver'
 import path from 'path'
-import { config } from "@fdl/config"
+import { config } from '@fdl/config'
 
 export class Download extends EventEmitter {
   private url: string
@@ -63,7 +63,7 @@ export class Download extends EventEmitter {
     return path.join(this.basepath, filename)
   }
 
-  private determineFilename (headers: any) {
+  private determineFilename (headers: Record<string, string>) {
     const disposition: string = headers['content-disposition']
 
     if (disposition) {

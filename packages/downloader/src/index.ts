@@ -1,4 +1,4 @@
-import { Download } from "./download";
+import { Download } from './download'
 
 // const download = new Download('https://timfeid.com/test.txt')
 

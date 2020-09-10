@@ -68,7 +68,7 @@ export async function parseTitle (query: string): Promise<InfoResponse | null> {
   let episodeNumber: number
   let season: number
   let name = query.replace(/\./g, ' ').trim()
-  let episode: any
+  let episode: Episode
   const match = name.match(/^(.*?)s?(\d+)\D(\d+)/i)
   if (match) {
     season = parseInt(match[2].trim(), 10)
@@ -79,8 +79,8 @@ export async function parseTitle (query: string): Promise<InfoResponse | null> {
   const shows = await search(name)
 
   if (shows.length > 0) {
-    let year = shows[0].firstAirDate
-    let title = shows[0].originalName
+    const year = shows[0].firstAirDate
+    const title = shows[0].originalName
 
     if (episodeNumber) {
       episode = await findEpisode(shows[0].id, season, episodeNumber)

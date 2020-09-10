@@ -1,8 +1,8 @@
-import { expect } from "chai"
+import { expect } from 'chai'
 import path from 'path'
-import finalpath from "../src/finalpath"
-import { DownloadInfo } from "../../server/src"
-import { config } from "../../config/src"
+import finalpath from '../src/finalpath'
+import { DownloadInfo } from '../../server/src'
+import { config } from '../../config/src'
 
 describe('finalpath', () => {
   it('gets movie final path correctly', async () => {

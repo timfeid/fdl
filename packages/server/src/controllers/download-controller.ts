@@ -1,7 +1,6 @@
-import { Context } from "koa";
+import { Context } from 'koa'
 import joi from 'joi'
-import { app } from "../app";
-import {findExtractor} from '@fdl/extraction'
+import { app } from '../app'
 
 class DownloadController {
   public async download (ctx: Context) {

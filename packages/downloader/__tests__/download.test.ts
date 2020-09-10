@@ -1,5 +1,5 @@
-import { Download } from "../src/download"
-import { expect } from "chai"
+import { Download } from '../src/download'
+import { expect } from 'chai'
 import fs from 'fs'
 import md5file from 'md5-file'
 

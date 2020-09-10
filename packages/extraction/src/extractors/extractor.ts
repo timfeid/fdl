@@ -1,6 +1,6 @@
-import Download from "@fdl/downloader";
-import { DownloadInfo } from "@fdl/server";
-import finalpath from "../finalpath";
+import Download from '@fdl/downloader'
+import { DownloadInfo } from '@fdl/server'
+import finalpath from '../finalpath'
 import fs from 'fs'
 
 export abstract class Extractor {
@@ -11,22 +11,22 @@ export abstract class Extractor {
     this._finalpath = finalpath(info)
   }
 
-  get finalpath () {
+  get finalpath (): string {
     return this._finalpath
   }
 
   protected abstract async start (downloads: Download[]): Promise<void>
 
-  protected createFinalpath () {
+  protected createFinalpath (): void {
     fs.mkdirSync(this.finalpath, {recursive: true})
   }
 
-  public async extract (downloads: Download[]) {
+  public async extract (downloads: Download[]): Promise<void> {
     await this.createFinalpath()
     await this.start(downloads)
   }
 
-  finalItems () {
+  finalItems (): string[] {
     return fs.readdirSync(this.finalpath)
   }
 }

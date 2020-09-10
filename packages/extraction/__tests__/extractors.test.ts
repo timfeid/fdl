@@ -1,10 +1,9 @@
-import chai, { expect } from "chai"
+import chai, { expect } from 'chai'
 import path from 'path'
-import finalpath from "../src/finalpath"
-import { DownloadInfo } from "../../server/src"
-import { config } from "../../config/src"
-import RarExtractor from "../src/extractors/rar.extractor"
-import Download from "../../downloader/src"
+import { DownloadInfo } from '../../server/src'
+import { config } from '../../config/src'
+import RarExtractor from '../src/extractors/rar.extractor'
+import Download from '../../downloader/src'
 import ss from 'chai-subset'
 chai.use(ss)
 
@@ -17,6 +16,7 @@ describe('extractors', () => {
       urls: [],
     }
     const download = new Download('')
+    // eslint-disable-next-line
     // @ts-ignore
     download._filepath = path.join(__dirname, 'test.rar')
     const rar = new RarExtractor(data)

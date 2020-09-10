@@ -1,8 +1,8 @@
 import path from 'path'
 import glob from 'glob'
-import { Validator, Extractor } from "./extractor";
-import { DownloadInfo } from '@fdl/server';
-import Download from '../../../downloader/src';
+import { Validator, Extractor } from './extractor'
+import { DownloadInfo } from '@fdl/server'
+import Download from '../../../downloader/src'
 
 type DriverMatcher = {
   matches: Validator
@@ -12,6 +12,7 @@ const drivers: DriverMatcher[] = []
 const driverGlob = path.join(__dirname, '**', '*.extractor.ts')
 const matches = glob.sync(driverGlob)
 for (const match of matches) {
+  // eslint-disable-next-line
   const contents = require(match)
   const driver = contents.default
   const validator = contents.validator

@@ -1,13 +1,14 @@
-import { Site } from "./site";
+import { Site } from './site'
 import path from 'path'
 import glob from 'glob'
-import DefaultSite from "./default";
+import DefaultSite from './default'
 
 const sites: Site[] = []
 const defaultSite = new DefaultSite()
 const siteGlob = path.join(__dirname, '**', '*.site.ts')
 const matches = glob.sync(siteGlob)
 for (const match of matches) {
+  // eslint-disable-next-line
   const site = require(match).default
 
   if (site.prototype instanceof Site) {

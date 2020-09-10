@@ -4,7 +4,6 @@ import {router} from './routes'
 import bodyparser from 'koa-bodyparser'
 import Download from '@fdl/downloader'
 import { DownloadInfo } from '.'
-import { Extractor } from '../../extraction/src/extractors/extractor'
 import { findExtractor } from '../../extraction/src'
 
 

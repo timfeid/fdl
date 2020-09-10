@@ -1,4 +1,4 @@
-import { Validator, Driver } from "./driver";
+import { Driver } from './driver'
 
 export default class DefaultDriver extends Driver {
   async start () {

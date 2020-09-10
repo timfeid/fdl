@@ -6,7 +6,7 @@ type Config = {
   contentPath: string,
   downloadPath: string,
   unrarBin: string,
-  env: any,
+  env: Record<string, string>,
 }
 
 let config: Config

@@ -1,9 +1,9 @@
 import path from 'path'
 import glob from 'glob'
-import DefaultDriver from "./default";
-import { Download } from "../download";
-import { AxiosResponse } from "axios";
-import { Validator, Driver } from "./driver";
+import DefaultDriver from './default'
+import { Download } from '../download'
+import { AxiosResponse } from 'axios'
+import { Validator, Driver } from './driver'
 
 type DriverMatcher = {
   matches: Validator
@@ -13,6 +13,7 @@ const drivers: DriverMatcher[] = []
 const driverGlob = path.join(__dirname, '**', '*.driver.ts')
 const matches = glob.sync(driverGlob)
 for (const match of matches) {
+  // eslint-disable-next-line
   const contents = require(match)
   const driver = contents.default
   const validator = contents.validator

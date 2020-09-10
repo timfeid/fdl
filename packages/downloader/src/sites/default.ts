@@ -1,7 +1,7 @@
-import { Site } from "./site";
+import { Site } from './site'
 
 export default class DefaultSite extends Site {
-  match (url: string) {
+  match () {
     return true
   }
 }

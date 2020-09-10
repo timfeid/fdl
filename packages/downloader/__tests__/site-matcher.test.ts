@@ -17,10 +17,10 @@ describe('site matcher', () => {
   it('can authenticate', async () => {
     await rapidgator.authenticate()
     expect(rapidgator.sid).to.not.be.undefined
-    const lastRetrieved = rapidgator.sid!.last_retrieved
+    const lastRetrieved = rapidgator.sid.last_retrieved
     await new Promise(resolve => setTimeout(resolve, 2))
     await rapidgator.authenticate()
-    expect(rapidgator.sid!.last_retrieved).to.eq(lastRetrieved)
+    expect(rapidgator.sid.last_retrieved).to.eq(lastRetrieved)
   })
 
   it('transforms url to download url', async () => {

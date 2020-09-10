@@ -1,10 +1,10 @@
 import {app} from '../src/app'
-import chai, { expect } from "chai"
+import chai, { expect } from 'chai'
 import request from 'supertest'
 import { Extractor } from '../../extraction/src/extractors/extractor'
-import ss from 'chai-subset'
 import path from 'path'
 import { config } from '@fdl/config'
+import ss from 'chai-subset'
 chai.use(ss)
 
 describe('downloads a series', () => {

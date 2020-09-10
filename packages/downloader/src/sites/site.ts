@@ -3,7 +3,7 @@ export abstract class Site {
   abstract match (url: string): boolean
 
   async authenticate () {
-
+    return
   }
 
   async needsAuthentication () {
@@ -15,6 +15,6 @@ export abstract class Site {
   }
 
   async transformRequest () {
-
+    return
   }
 }

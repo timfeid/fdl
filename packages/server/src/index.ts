@@ -1,7 +1,6 @@
 import {InfoResponse} from '../../info/src/types/InfoResponse'
-import { app } from "./app";
+import { app } from './app'
 import {logger} from '@fdl/logger'
-import { config } from '../../config/src';
 
 export interface DownloadInfo extends InfoResponse {
   urls: string[]

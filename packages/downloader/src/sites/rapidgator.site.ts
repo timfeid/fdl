@@ -1,5 +1,5 @@
-import { Site } from "./site";
-import { config } from "@fdl/config";
+import { Site } from './site'
+import { config } from '@fdl/config'
 import axios from 'axios'
 import qs from 'querystring'
 

@@ -1,5 +1,5 @@
-import { Download } from "../download";
-import { AxiosResponse } from "axios";
+import { Download } from '../download'
+import { AxiosResponse } from 'axios'
 
 export abstract class Driver {
   download: Download

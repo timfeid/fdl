@@ -1,11 +1,12 @@
-import { Validator, Driver } from "./driver";
-import axios, { AxiosResponse } from 'axios'
+import { Validator, Driver } from './driver'
+import axios from 'axios'
 import fs from 'fs'
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events'
 import path from 'path'
+// eslint-disable-next-line
 // @ts-ignore
 import Multistream from 'multistream'
-import { config } from "@fdl/config";
+import { config } from '@fdl/config'
 
 const TOTAL_PARTS = 8
 
@@ -32,14 +33,14 @@ class Part extends EventEmitter {
   parts: Parts
   partNumber: number
   totalBytes: number
-  stream: any
+  stream: fs.WriteStream
   file: string
   downloaded = 0
   constructor (parts: Parts, partNumber: number) {
     super()
     this.parts = parts
     this.partNumber = partNumber
-    this.totalBytes = Math.floor(parts.download.contentLength! / TOTAL_PARTS)
+    this.totalBytes = Math.floor(parts.download.contentLength / TOTAL_PARTS)
     this.file = path.join(config.tempPath, `test.part.${this.partNumber+1}`)
     this.stream = fs.createWriteStream(this.file)
   }
@@ -55,7 +56,7 @@ class Part extends EventEmitter {
     // part number 0 = (0+1) * 50 = 50
     // part number 1 = (1+1) * 50 = 100
     // part number 2 = (2+1) * 50 = 150
-    return this.partNumber === TOTAL_PARTS-1 ? this.parts.download.contentLength! : (this.partNumber+1) * this.totalBytes
+    return this.partNumber === TOTAL_PARTS-1 ? this.parts.download.contentLength : (this.partNumber+1) * this.totalBytes
   }
 
   error (e: Error) {
@@ -120,7 +121,7 @@ export default class Parts extends Driver {
   }
 
   private async joinParts () {
-    await mergeFiles(this.parts.map(p => p.file), this.download.filepath!)
+    await mergeFiles(this.parts.map(p => p.file), this.download.filepath)
   }
 }
 
