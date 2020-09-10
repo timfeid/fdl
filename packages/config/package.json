@@ -1,0 +1,11 @@
+{
+  "name": "@fdl/config",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "devDependencies": {
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  }
+}

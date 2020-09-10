@@ -1,0 +1,11 @@
+{
+  "name": "fdl",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Tim Feid <tim.feid@tellimer.com>",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "license": "MIT"
+}

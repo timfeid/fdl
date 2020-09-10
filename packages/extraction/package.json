@@ -1,0 +1,13 @@
+{
+  "name": "@fdl/extraction",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "scripts": {
+    "test": "NODE_ENV=test ts-mocha --paths '__tests__/*.test.ts' --exit"
+  },
+  "devDependencies": {
+  },
+  "dependencies": {
+  }
+}
