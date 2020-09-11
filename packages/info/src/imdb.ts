@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { InfoResponse } from './types/InfoResponse'
+import {config} from '@fdl/config'
 
-const OMDB_KEY = '19bc7c0c'
+const OMDB_KEY = config.env.OMDB_KEY
 
 export async function getInfo (imdb: string): Promise<InfoResponse> {
   const url = `http://www.omdbapi.com/?i=${imdb}&apikey=${OMDB_KEY}`
