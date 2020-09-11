@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { InfoResponse, Episode } from './types/InfoResponse'
+import {config} from '@fdl/config'
 
-const MOVIE_DB_KEY = 'ce52fcc3a48eb02273ff13a2d0236f2c'
+const MOVIE_DB_KEY = config.env.MOVIE_DB_KEY
 
 type ApiResponseResult = {
   original_name: string

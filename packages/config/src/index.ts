@@ -20,9 +20,10 @@ function processPath (p: string) {
 }
 
 const setupConfig = (): Config => {
-  const env = dotenv.config({
-    path: processPath(process.env.NODE_ENV === 'test' ? './.test.env' : './.env')
-  }).parsed || {}
+  let env = dotenv.config({path: processPath('./.env')}).parsed || {}
+  if (process.env.NODE_ENV === 'test') {
+    env = {...env, ...dotenv.config({path: processPath('./.test.env')}).parsed || {}}
+  }
 
   return {
     tempPath: processPath(env.TEMP_PATH || '/tmp'),
