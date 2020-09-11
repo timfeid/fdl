@@ -19,7 +19,7 @@ class DownloadController {
     app.emit('start-download', value)
 
     ctx.body = {
-      hi: 'yup'
+      started: true,
     }
   }
 }

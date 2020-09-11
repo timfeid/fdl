@@ -1,5 +1,5 @@
 import { Validator, Extractor } from './extractor'
-import Download from '@fdl/downloader'
+import {Download} from '@fdl/downloader'
 import {spawn} from 'child_process'
 import {config} from '@fdl/config'
 
@@ -17,7 +17,7 @@ export default class RarExtractor extends Extractor {
         const match = d.toString().match(/\d+%/g)
         const progress = match ? parseInt(match[0], 10) : 0
         if (progress > 0) {
-          // console.log(progress)
+          this.setProgress(progress)
         }
       })
 

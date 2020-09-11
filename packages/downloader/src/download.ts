@@ -7,11 +7,18 @@ import { Driver } from './drivers/driver'
 import path from 'path'
 import { config } from '@fdl/config'
 
+export type DownloadObject = {
+  finalUrl: string
+  started: boolean
+  contentLength: number
+  downloaded: number
+}
+
 export class Download extends EventEmitter {
   private url: string
   private _finalUrl?: string
   private site: Site
-  private started = false
+  private _started = false
   private _filepath?: string
   private _contentLength?: number
   private driver?: Driver
@@ -30,6 +37,10 @@ export class Download extends EventEmitter {
     return this._filepath
   }
 
+  public get started () {
+    return this._started
+  }
+
   constructor (url: string) {
     super()
     this.url = url
@@ -37,7 +48,7 @@ export class Download extends EventEmitter {
   }
 
   async start () {
-    this.started = true
+    this._started = true
     try {
       this._finalUrl = await this.site.transformUrl(this.url)
       const response = await this.getHeaders()
@@ -90,5 +101,14 @@ export class Download extends EventEmitter {
       withCredentials: true,
       headers: {}
     })
+  }
+
+  public toObject (): DownloadObject {
+    return {
+      finalUrl: this.finalUrl,
+      started: this.started,
+      contentLength: this.contentLength,
+      downloaded: this.downloaded,
+    }
   }
 }

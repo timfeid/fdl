@@ -1,5 +1,5 @@
-import Download from '@fdl/downloader'
-export {findExtractor} from './extractors'
+import {Download} from '@fdl/downloader'
+import {findExtractor} from './extractors'
 import { Extractor } from './extractors/extractor'
 
 export async function extract (extractor: Extractor, downloads: Download[]): Promise<void> {
@@ -7,4 +7,4 @@ export async function extract (extractor: Extractor, downloads: Download[]): Pro
   return extractor.extract(downloads)
 }
 
-export {Extractor}
+export {Extractor, findExtractor}

@@ -20,6 +20,9 @@ describe('downloads a series', () => {
     expect(response.status).to.eq(200)
     let extractor: Extractor
     await new Promise(resolve => {
+      // app.on('download-progress', wat => {
+      //   console.log(wat)
+      // })
       app.on('download-complete', (e: Extractor) => {
         extractor = e
         resolve()

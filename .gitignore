@@ -24,3 +24,5 @@ yarn-error.log*
 *.sw*
 
 test-data/*
+
+package-lock.json

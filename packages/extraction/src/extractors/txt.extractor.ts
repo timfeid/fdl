@@ -1,5 +1,5 @@
 import { Validator, Extractor } from './extractor'
-import Download from '@fdl/downloader'
+import {Download} from '@fdl/downloader'
 import path from 'path'
 import { copyOrRename } from '../utils'
 
