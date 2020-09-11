@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>WebSocket Test</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
+<script>
+  const socket = io('http://localhost:4242');
+  socket.on('connect', () => {
+    console.log('we did it, mom')
+  })
+  socket.on('download-progress', (download) => {
+    console.log(download)
+  })
+</script>
+
+<h2>WebSocket Test</h2>
+
+<div id="output"></div>

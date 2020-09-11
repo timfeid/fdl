@@ -1,7 +1,9 @@
+import http from 'http'
 import {InfoResponse} from '@fdl/info'
 import { app } from './app'
 import {logger} from '@fdl/logger'
 import {DownloadObject} from '@fdl/downloader'
+import {createSocketIo} from './socket'
 
 export interface DownloadInfo extends InfoResponse {
   urls: string[],
@@ -19,6 +21,8 @@ export interface DownloadBundle extends DownloadInfo {
   step: 'download' | 'extract' | 'queued' | 'complete'
 }
 
-app.listen(4242, '0.0.0.0', 0, () => {
+const server = http.createServer(app.callback())
+createSocketIo(server, app)
+server.listen(4242, '0.0.0.0', 0, () => {
   logger.verbose(`listening on port ${4242}`)
 })

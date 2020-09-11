@@ -4,8 +4,6 @@ import {router} from './routes'
 import bodyparser from 'koa-bodyparser'
 import { setupListeners } from './listeners'
 
-
-
 const app = new Koa()
 
 app.use(bodyparser())
