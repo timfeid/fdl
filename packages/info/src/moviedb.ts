@@ -28,6 +28,7 @@ export type SearchResult = {
   id: number
   posterPath: string
   backdropPath: string
+  blurb: string
 }
 
 export async function search (query: string): Promise<SearchResult[]> {
@@ -44,6 +45,7 @@ export async function search (query: string): Promise<SearchResult[]> {
       firstAirDate: result.first_air_date,
       posterPath: `https://image.tmdb.org/t/p/original${result.poster_path}`,
       backdropPath: `https://image.tmdb.org/t/p/original${result.backdrop_path}`,
+      blurb: result.overview,
     }
   })
 }
@@ -57,6 +59,7 @@ export async function findEpisode (seriesId: number, seasonNumber: string | numb
   try {
     const response = await axios.get(url)
     return {
+      blurb: response.data.overview,
       airDate: response.data.air_date,
       number: response.data.episode_number,
     }
@@ -82,9 +85,14 @@ export async function parseTitle (query: string): Promise<InfoResponse | null> {
   if (shows.length > 0) {
     const year = shows[0].firstAirDate
     const title = shows[0].originalName
+    const poster = shows[0].posterPath
+    let blurb = shows[0].blurb
 
     if (episodeNumber) {
       episode = await findEpisode(shows[0].id, season, episodeNumber)
+      if (episode) {
+        blurb = episode.blurb
+      }
     }
 
     return {
@@ -93,6 +101,8 @@ export async function parseTitle (query: string): Promise<InfoResponse | null> {
       year,
       episode,
       season,
+      blurb,
+      poster,
     }
   }
 

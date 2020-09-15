@@ -7,7 +7,12 @@ export function createSocketIo (server: Server, app: Koa) {
   const io = socketIO(server)
 
   io.on('connection', socket => {
-    console.log(socket)
+    // console.log(socket)
+    console.log('a socket has connected.')
+  })
+
+  app.on('download-queued', (download: DownloadBundle) => {
+    io.emit('download-queued', download)
   })
 
   app.on('download-progress', (progress: DownloadBundle) => {

@@ -8,6 +8,8 @@ class DownloadController {
       urls: joi.array().items(joi.string()).min(1).required(),
       type: joi.string().allow('series').allow('movie').required(),
       title: joi.string().required(),
+      blurb: joi.string().required(),
+      poster: joi.string().required(),
       ...(ctx.request.body.type === 'series' ? {
         season: joi.number().required(),
         episode: joi.number(),

@@ -15,6 +15,8 @@ describe('downloads a series', () => {
       title: 'Californication',
       season: 1,
       episode: 2,
+      blurb: 'string',
+      poster: 'https://image.tmdb.org/t/p/original/9BvRze9keEyTzB6ewmDvjzFGYuG.jpg',
     }
     const response = await request(app.callback()).post('/download').send(data).type('json')
     expect(response.status).to.eq(200)
@@ -39,6 +41,8 @@ describe('downloads a series', () => {
       type: 'movie',
       title: 'The Godfather',
       year: '1972',
+      blurb: 'string',
+      poster: 'https://image.tmdb.org/t/p/original/9BvRze9keEyTzB6ewmDvjzFGYuG.jpg',
     }
     const response = await request(app.callback()).post('/download').send(data).type('json')
     expect(response.status).to.eq(200)

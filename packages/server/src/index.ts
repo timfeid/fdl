@@ -16,9 +16,10 @@ export interface Extraction {
 }
 
 export interface DownloadBundle extends DownloadInfo {
+  id: string,
   downloads: DownloadObject[]
   extraction: Extraction
-  step: 'download' | 'extract' | 'queued' | 'complete'
+  step: 'download' | 'extract' | 'queue' | 'complete'
 }
 
 const server = http.createServer(app.callback())

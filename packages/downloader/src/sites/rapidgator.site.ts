@@ -73,6 +73,8 @@ export default class Rapidgator extends Site {
 
       return response.data.response.url
     } catch (e) {
+      console.log('Unable to transform URL:', e.response.status)
+      console.log(e.response.data)
       return url
     }
   }
