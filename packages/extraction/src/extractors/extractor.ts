@@ -1,5 +1,5 @@
 import {Download} from '@fdl/downloader'
-import { DownloadInfo } from '@fdl/server'
+import { DownloadInfo } from '@fdl/info'
 import finalpath from '../finalpath'
 import fs from 'fs'
 import {EventEmitter} from 'events'

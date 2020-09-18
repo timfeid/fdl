@@ -1,7 +1,7 @@
 import {Server} from 'http'
 import socketIO from 'socket.io'
 import Koa from 'koa'
-import { DownloadBundle } from '.'
+import { DownloadBundle } from '@fdl/info'
 
 export function createSocketIo (server: Server, app: Koa) {
   const io = socketIO(server)

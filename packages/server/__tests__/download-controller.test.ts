@@ -11,6 +11,7 @@ describe('downloads a series', () => {
   it('downloads a txt file to the correct location', async () => {
     const data = {
       urls: ['https://timfeid.com/test.txt'],
+      year: '2001-2008',
       type: 'series',
       title: 'Californication',
       season: 1,
@@ -18,7 +19,7 @@ describe('downloads a series', () => {
       blurb: 'string',
       poster: 'https://image.tmdb.org/t/p/original/9BvRze9keEyTzB6ewmDvjzFGYuG.jpg',
     }
-    const response = await request(app.callback()).post('/download').send(data).type('json')
+    const response = await request(app.callback()).post('/downloads').send(data).type('json')
     expect(response.status).to.eq(200)
     let extractor: Extractor
     await new Promise(resolve => {
@@ -44,7 +45,7 @@ describe('downloads a series', () => {
       blurb: 'string',
       poster: 'https://image.tmdb.org/t/p/original/9BvRze9keEyTzB6ewmDvjzFGYuG.jpg',
     }
-    const response = await request(app.callback()).post('/download').send(data).type('json')
+    const response = await request(app.callback()).post('/downloads').send(data).type('json')
     expect(response.status).to.eq(200)
     let extractor: Extractor
     await new Promise(resolve => {

@@ -5,13 +5,14 @@
   "license": "MIT",
   "scripts": {
     "serve": "tsnd -r tsconfig-paths/register src",
-    "test": "NODE_ENV=test ts-mocha --paths '__tests__/*.test.ts' --exit",
+    "test": "NODE_ENV=test ts-mocha --file __tests__/setup.ts --paths '__tests__/*.test.ts' --exit",
     "lint": "eslint ."
   },
   "devDependencies": {
     "@types/koa": "^2.11.4",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-router": "^7.4.1",
+    "@types/koa__cors": "^3.0.1",
     "@types/md5": "^2.2.0",
     "@types/socket.io": "^2.1.11",
     "@types/supertest": "^2.0.10",
@@ -27,7 +28,9 @@
     "typescript": "^4.0.2"
   },
   "dependencies": {
+    "@koa/cors": "^3.1.0",
     "joi": "^17.2.1",
+    "joiful": "^2.0.1",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^9.4.0",

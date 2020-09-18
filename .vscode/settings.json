@@ -7,5 +7,19 @@
     "**/node_modules": true, // this excludes all folders
     "**/coverage/": true,
     "**/.nyc_output/": true
-  }
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "test fdl",
+      "database": "${workspaceFolder:fdl}/test-data/database.sqlite"
+    },
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "fdl",
+      "database": "${workspaceFolder:fdl}/database.sqlite"
+    }
+  ]
 }

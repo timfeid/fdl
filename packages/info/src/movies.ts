@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { InfoResponse } from './types/InfoResponse'
 import {config} from '@fdl/config'
+import { InfoResponse } from '.'
 
 const OMDB_KEY = config.env.OMDB_KEY
 
@@ -9,7 +9,7 @@ export async function getInfo (imdb: string): Promise<InfoResponse> {
   const response = await axios.get(url)
 
   return {
-    type: response.data.Type,
+    type: {name: 'movie'},
     title: response.data.Title,
     year: response.data.Year,
     blurb: response.data.Plot,

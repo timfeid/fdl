@@ -26,3 +26,4 @@ yarn-error.log*
 test-data/*
 
 package-lock.json
+database.sqlite

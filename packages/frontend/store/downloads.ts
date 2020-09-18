@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree } from 'vuex'
-import { DownloadBundle } from '@fdl/server'
+import { DownloadBundle } from '@fdl/info'
 import vue from 'vue'
 
 interface State {
@@ -19,7 +19,13 @@ export const mutations: MutationTree<State> = {
     const index = state.downloads.findIndex((d) => d.id === download.id)
     if (index !== -1) {
       vue.set(state.downloads, index, download)
+    } else {
+      state.downloads.unshift(download)
     }
+  },
+
+  setAll(state, downloads: DownloadBundle[]) {
+    state.downloads = downloads
   },
 }
 

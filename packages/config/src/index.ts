@@ -7,6 +7,7 @@ type Config = {
   downloadPath: string,
   unrarBin: string,
   env: Record<string, string>,
+  database: string,
 }
 
 let config: Config
@@ -31,6 +32,7 @@ const setupConfig = (): Config => {
     downloadPath: processPath(env.DOWNLOAD_PATH || env.TEMP_PATH || '/tmp'),
     unrarBin: processPath(env.UNRAR_BIN || '/usr/local/bin/unrar'),
     env,
+    database: processPath(env.DATABASE_LOCATION || './database.sqlite'),
   }
 }
 

@@ -9,6 +9,7 @@
           <v-card class="mb-2">
             <v-img :src="download.poster" width="150" height="230"></v-img>
             <v-progress-linear
+              :indeterminate="indeterminate(download)"
               :value="progress(download)"
               :color="color(download)"
             />
@@ -26,27 +27,31 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { DownloadBundle } from '@fdl/server'
+import { DownloadBundle } from '@fdl/info'
 
 const downloads = namespace('downloads')
 
 @Component
 export default class Index extends Vue {
-  @downloads.State downloads: DownloadBundle[]
+  @downloads.State downloads!: DownloadBundle[]
 
   color(download: DownloadBundle) {
     switch (download.step) {
       case 'complete':
         return 'green'
       case 'queue':
-        return 'brown'
+        return 'blue lighten-3'
       case 'extract':
         return 'orange'
       case 'download':
-        return 'blue'
+        return 'blue lighten-3'
     }
 
     return 'red'
+  }
+
+  indeterminate(download: DownloadBundle) {
+    return download.step === 'queue'
   }
 
   progress(download: DownloadBundle) {
@@ -56,10 +61,7 @@ export default class Index extends Vue {
       case 'extract':
         return download.extraction.progress
       case 'download':
-        return (
-          download.downloads.reduce((val, d) => val + d.downloaded, 0) /
-          download.downloads.reduce((val, d) => val + d.contentLength, 0)
-        )
+        return download.downloadProgress
       default:
         return 0
     }

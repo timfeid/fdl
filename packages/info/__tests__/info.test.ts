@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai'
-import { getInfo } from '../src/imdb'
-import { search, parseTitle } from '../src/moviedb'
+import { getInfo } from '../src/movies'
+import { search, parseTitle } from '../src/tv'
 import chaiSubset from 'chai-subset'
 
 chai.use(chaiSubset)

@@ -1,6 +1,6 @@
 import io from 'socket.io-client'
 import { Plugin } from '@nuxt/types'
-import {DownloadBundle} from '@fdl/server'
+import {DownloadBundle} from '@fdl/info'
 import {Store} from 'vuex'
 
 function createSocket (store: Store<any>) {

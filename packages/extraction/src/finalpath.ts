@@ -1,6 +1,6 @@
-import {DownloadInfo} from '@fdl/server'
 import {config} from '@fdl/config'
 import path from 'path'
+import { DownloadInfo } from '../../info/src'
 
 function seriesPath (downloadInfo: DownloadInfo) {
   const showPath = path.join(config.contentPath, 'TV Shows', downloadInfo.title)
@@ -12,7 +12,7 @@ function seriesPath (downloadInfo: DownloadInfo) {
 }
 
 export default function finalpath (downloadInfo: DownloadInfo): string {
-  switch (downloadInfo.type) {
+  switch (downloadInfo.type.name) {
   case 'movie':
     return path.join(config.contentPath, 'Movies', `${downloadInfo.title} (${downloadInfo.year})`)
   case 'series':

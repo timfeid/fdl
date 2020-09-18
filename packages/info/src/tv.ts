@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { InfoResponse, Episode } from './types/InfoResponse'
 import {config} from '@fdl/config'
+import { InfoResponse } from '.'
 
 const MOVIE_DB_KEY = config.env.MOVIE_DB_KEY
 
@@ -18,6 +18,12 @@ type ApiResponseResult = {
   vote_average: number
   overview: string
   poster_path: string
+}
+
+export type EpisodeResponse = {
+  blurb: string
+  airDate: string
+  number: number
 }
 
 export type SearchResult = {
@@ -50,7 +56,7 @@ export async function search (query: string): Promise<SearchResult[]> {
   })
 }
 
-export async function findEpisode (seriesId: number, seasonNumber: string | number, episodeNumber: string | number): Promise<null | Episode> {
+export async function findEpisode (seriesId: number, seasonNumber: string | number, episodeNumber: string | number): Promise<null | EpisodeResponse> {
   seasonNumber = typeof seasonNumber !== 'number' ? parseInt(seasonNumber, 10) : seasonNumber
   episodeNumber = typeof episodeNumber !== 'number' ? parseInt(episodeNumber, 10) : episodeNumber
 
@@ -72,7 +78,7 @@ export async function parseTitle (query: string): Promise<InfoResponse | null> {
   let episodeNumber: number
   let season: number
   let name = query.replace(/\./g, ' ').trim()
-  let episode: Episode
+  let episode: number | null = null
   const match = name.match(/^(.*?)s?(\d+)\D(\d+)/i)
   if (match) {
     season = parseInt(match[2].trim(), 10)
@@ -89,14 +95,15 @@ export async function parseTitle (query: string): Promise<InfoResponse | null> {
     let blurb = shows[0].blurb
 
     if (episodeNumber) {
-      episode = await findEpisode(shows[0].id, season, episodeNumber)
-      if (episode) {
-        blurb = episode.blurb
+      const e = await findEpisode(shows[0].id, season, episodeNumber)
+      if (e) {
+        blurb = e.blurb
+        episode = e.number
       }
     }
 
     return {
-      type: 'series',
+      type: {name: 'series'},
       title,
       year,
       episode,

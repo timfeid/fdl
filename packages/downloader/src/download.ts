@@ -12,6 +12,7 @@ export type DownloadObject = {
   started: boolean
   contentLength: number
   downloaded: number
+  totalProgress: number
 }
 
 export class Download extends EventEmitter {
@@ -22,8 +23,9 @@ export class Download extends EventEmitter {
   private _filepath?: string
   private _contentLength?: number
   private driver?: Driver
-  private downloaded = 0
+  private _downloaded = 0
   private basepath = config.downloadPath
+  private previousTotal = 0
 
   public get contentLength () {
     return this._contentLength
@@ -39,6 +41,14 @@ export class Download extends EventEmitter {
 
   public get started () {
     return this._started
+  }
+
+  public get downloaded () {
+    return this._downloaded
+  }
+
+  public get totalProgress () {
+    return Math.round(this.downloaded / this.contentLength * 100)
   }
 
   constructor (url: string) {
@@ -90,8 +100,11 @@ export class Download extends EventEmitter {
   }
 
   public progress(chunkLength: number) {
-    this.downloaded += chunkLength
-    this.emit('progress', this)
+    this._downloaded += chunkLength
+    if (this.totalProgress !== this.previousTotal || this.downloaded === this.contentLength) {
+      this.previousTotal = this.totalProgress
+      this.emit('progress', this)
+    }
   }
 
   private async getHeaders () {
@@ -109,6 +122,7 @@ export class Download extends EventEmitter {
       started: this.started,
       contentLength: this.contentLength,
       downloaded: this.downloaded,
+      totalProgress: this.totalProgress,
     }
   }
 }
