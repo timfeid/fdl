@@ -1,4 +1,4 @@
-import { BaseEntity as Base, BeforeInsert, BeforeUpdate, Column, PrimaryGeneratedColumn } from 'typeorm'
+import { BaseEntity as Base, BeforeInsert, BeforeUpdate, Column, Index, PrimaryGeneratedColumn } from 'typeorm'
 
 export class BaseEntity extends Base {
 
@@ -6,9 +6,11 @@ export class BaseEntity extends Base {
   public id!: number
 
   @Column()
+  @Index()
   public createdAt!: Date
 
   @Column()
+  @Index()
   public updatedAt!: Date
 
   @BeforeInsert()

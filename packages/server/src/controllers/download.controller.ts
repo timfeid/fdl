@@ -6,7 +6,7 @@ import { Step } from '../../../info/src'
 
 class DownloadController {
   public async list (ctx: Context) {
-    ctx.body = await Download.find()
+    ctx.body = await Download.find({order: {createdAt: 'DESC'}})
   }
 
   public async download (ctx: Context) {
