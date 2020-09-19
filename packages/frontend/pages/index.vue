@@ -1,27 +1,35 @@
 <template>
   <v-layout class="align-baseline">
-    <div class="d-flex flex-wrap">
-      <template v-for="download in downloads">
-        <div
-          :key="download.id"
-          style="margin: 0 2rem 2rem 0px; max-width: 150px"
-        >
-          <v-card class="mb-2">
-            <v-img :src="download.poster" width="150" height="230"></v-img>
-            <v-progress-linear
-              :indeterminate="indeterminate(download)"
-              :value="progress(download)"
-              :color="color(download)"
-            />
-          </v-card>
-          <div class="movie-title">
-            {{ download.title }}
+    <v-container class="fill-height flex-column align-start" fluid>
+      <div
+        class="text-uppercase font-weight-bold mb-3"
+        style="color: rgba(255, 255, 255, 0.3); font-size: 0.85rem"
+      >
+        Recent Downloads
+      </div>
+      <div class="d-flex flex-wrap">
+        <template v-for="download in downloads">
+          <div
+            :key="download.id"
+            style="margin: 0 2rem 2rem 0px; max-width: 150px"
+          >
+            <v-card class="mb-2">
+              <v-img :src="download.poster" width="150" height="230"></v-img>
+              <v-progress-linear
+                :indeterminate="indeterminate(download)"
+                :value="progress(download)"
+                :color="color(download)"
+              />
+            </v-card>
+            <div class="movie-title">
+              {{ download.title }}
+            </div>
+            <div class="movie-year">{{ download.year }}</div>
+            <div class="movie-added-date">2 days ago</div>
           </div>
-          <div class="movie-year">{{ download.year }}</div>
-          <div class="movie-added-date">2 days ago</div>
-        </div>
-      </template>
-    </div>
+        </template>
+      </div>
+    </v-container>
   </v-layout>
 </template>
 
