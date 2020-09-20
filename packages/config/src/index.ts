@@ -10,8 +10,6 @@ type Config = {
   database: string,
 }
 
-let config: Config
-
 function processPath (p: string) {
   if (p.startsWith('.')) {
     return path.join(__dirname, '../../../', p)
@@ -36,8 +34,4 @@ const setupConfig = (): Config => {
   }
 }
 
-if (!config) {
-  config = setupConfig()
-}
-
-export {config}
+export const config = setupConfig()

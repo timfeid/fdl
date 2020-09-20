@@ -6,14 +6,8 @@ import { matchDriver } from './drivers'
 import { Driver } from './drivers/driver'
 import path from 'path'
 import { config } from '@fdl/config'
+import {DownloadObject} from '@fdl/types'
 
-export type DownloadObject = {
-  finalUrl: string
-  started: boolean
-  contentLength: number
-  downloaded: number
-  totalProgress: number
-}
 
 export class Download extends EventEmitter {
   private url: string

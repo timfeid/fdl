@@ -2,7 +2,7 @@ import { Context } from 'koa'
 import joi from 'joi'
 import { app } from '../app'
 import { Download, Type, Url } from '@fdl/data'
-import { TVService, MovieService, Step } from '../../../info/src'
+import { TVService, MovieService } from '@fdl/info'
 
 class InfoController {
   public async tvShows (ctx: Context) {

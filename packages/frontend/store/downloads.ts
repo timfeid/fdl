@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree } from 'vuex'
-import { DownloadBundle } from '@fdl/info'
+import { DownloadBundle } from '@fdl/types'
 import vue from 'vue'
 
 interface State {

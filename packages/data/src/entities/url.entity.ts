@@ -1,6 +1,6 @@
 import { AfterInsert, AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, AfterUpdate, PrimaryGeneratedColumn } from 'typeorm'
 import { BaseEntity } from '../base-entity'
-import { Url as UrlInterface} from '@fdl/info'
+import { Url as UrlInterface} from '@fdl/types'
 import { Download } from './download.entity'
 
 @Entity()

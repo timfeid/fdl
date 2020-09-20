@@ -1,5 +1,5 @@
 import {findExtractor, Extractor} from '@fdl/extraction'
-import { DownloadInfo, DownloadBundle, Step } from '@fdl/info'
+import { DownloadInfo, DownloadBundle, Step } from '@fdl/types'
 import Koa from 'koa'
 import {Manager, Download} from '@fdl/downloader'
 

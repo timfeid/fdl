@@ -1,6 +1,6 @@
 import {config} from '@fdl/config'
 import path from 'path'
-import { DownloadInfo } from '../../info/src'
+import { DownloadInfo } from '@fdl/types'
 
 function seriesPath (downloadInfo: DownloadInfo) {
   const showPath = path.join(config.contentPath, 'TV Shows', downloadInfo.title)

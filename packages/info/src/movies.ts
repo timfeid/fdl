@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {config} from '@fdl/config'
-import { InfoResponse } from '.'
+import { InfoResponse } from '@fdl/types'
 
 const OMDB_KEY = config.env.OMDB_KEY
 

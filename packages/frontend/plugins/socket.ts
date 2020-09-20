@@ -1,9 +1,9 @@
 import io from 'socket.io-client'
 import { Plugin } from '@nuxt/types'
-import {DownloadBundle} from '@fdl/info'
-import {Store} from 'vuex'
+import { DownloadBundle } from '@fdl/types'
+import { Store } from 'vuex'
 
-function createSocket (store: Store<any>) {
+function createSocket(store: Store<any>) {
   const socket = io('http://localhost:4242')
 
   // socket.on('connect', () => {
@@ -38,7 +38,7 @@ declare module 'vuex/types/index' {
   }
 }
 
-const plugin: Plugin = function ({store}, inject) {
+const plugin: Plugin = function ({ store }, inject) {
   inject('socket', createSocket(store))
 }
 

@@ -1,15 +1,11 @@
 <template>
-  <v-app id="inspire" color="#44494D">
-    <v-navigation-drawer permanent app clipped floating color="#343A3F">
-      <v-list-item>
-        <v-list-item-content style="padding-bottom: 8px">
-          <v-list-item-title class="title">
-            <img height="25" src="/logo.png" />
-          </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-divider></v-divider>
+  <v-app id="inspire">
+    <v-navigation-drawer permanent app clipped floating dark>
+      <v-toolbar flat dark>
+        <v-toolbar-title class="d-flex align-center">
+          <img height="25" src="/logo.png" />
+        </v-toolbar-title>
+      </v-toolbar>
 
       <v-list dense>
         <v-list-item link nuxt to="/">
@@ -20,7 +16,7 @@
             <v-list-item-title> Downloads </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link nuxt :to="{name: 'info'}">
+        <v-list-item link nuxt :to="{ name: 'info' }">
           <v-list-item-action>
             <v-icon>mdi-information</v-icon>
           </v-list-item-action>
@@ -48,12 +44,16 @@ export default class App extends Vue {
   drawer: any = null
   items: any[] = []
   items2: any[] = []
-
 }
 </script>
 
 <style lang="scss">
-.theme--dark.v-application {
-  background: #44494d !important;
+.theme--light {
+  &.v-application {
+    background: #e4e5e6 !important;
+  }
+  .v-data-table {
+    // background-color: #393D40;
+  }
 }
 </style>

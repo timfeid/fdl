@@ -1,4 +1,4 @@
-export { Download, DownloadObject } from './download'
+export { Download } from './download'
 export {Manager} from './manager'
 
 // const download = new Download('https://timfeid.com/test.txt')

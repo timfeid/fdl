@@ -1,7 +1,7 @@
 import path from 'path'
 import glob from 'glob'
 import { Validator, Extractor } from './extractor'
-import { DownloadInfo } from '@fdl/info'
+import { DownloadInfo } from '@fdl/types'
 import {Download} from '@fdl/downloader'
 
 type DriverMatcher = {

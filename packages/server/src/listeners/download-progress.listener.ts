@@ -1,4 +1,4 @@
-import { DownloadBundle } from '@fdl/info'
+import { DownloadBundle } from '@fdl/types'
 import Koa from 'koa'
 import {Download} from '@fdl/data'
 
