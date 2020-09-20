@@ -33,7 +33,7 @@ class DownloadController {
     download.blurb = value.blurb
     download.title = value.title
     download.year = value.year
-    download.urls = value.urls.map((url: string) => Url.create({url}))
+    download.urls = await Promise.all(value.urls.map(async (url: string) => await Url.create({url}).save()))
     download.type = await Type.findOne({name: value.type}) || await Type.create({name: value.type}).save()
     download.episode = value.episode
     download.season = value.season

@@ -27,10 +27,11 @@ export class Download extends BaseEntity implements DownloadInfo {
   @Column({nullable: true})
   episode?: number | null
 
-  @ManyToOne(() => Type)
+  @ManyToOne(() => Type, {eager: true})
   type: Type
 
-  @OneToMany(() => Url, url => url.download)
+  @ManyToMany(() => Url, url => url.download, {eager: true})
+  @JoinTable()
   urls: Url[]
 
   // @Column({

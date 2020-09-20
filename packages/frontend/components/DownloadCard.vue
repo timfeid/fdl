@@ -1,7 +1,7 @@
 <template>
   <VueFlip
-    :width="cardWidth"
-    :height="cardHeight + 5"
+    :width="cardWidth.toString()"
+    :height="(cardHeight + 5).toString()"
     :style="`width: ${cardWidth}px;`"
     active-click
   >
