@@ -44,10 +44,16 @@ export interface InfoResponse {
   type: Type
 }
 
+export interface IncomingDownload extends InfoResponse {
+  referrer?: string
+  urls: string[]
+}
+
 export interface DownloadInfo extends InfoResponse {
   id: number
   urls: Url[]
   step: Step
+  referrer?: string
 }
 
 export interface DownloadBundle extends DownloadInfo {

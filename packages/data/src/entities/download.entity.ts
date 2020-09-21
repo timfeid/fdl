@@ -21,6 +21,15 @@ export class Download extends BaseEntity implements DownloadInfo {
   @Column({nullable: true})
   season?: number | null
 
+  @Column({nullable: true})
+  startedAt: Date | null
+
+  @Column({nullable: true})
+  completedAt: Date | null
+
+  @Column({nullable: true})
+  referrer: string | null
+
   // @ManyToOne(() => Episode)
   // episode?: Episode
 

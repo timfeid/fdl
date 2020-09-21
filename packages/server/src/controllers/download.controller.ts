@@ -17,6 +17,7 @@ class DownloadController {
       year: joi.string().required(),
       blurb: joi.string().required(),
       poster: joi.string().required(),
+      referrer: joi.string(),
       ...(ctx.request.body.type === 'series' ? {
         season: joi.number().required(),
         episode: joi.number(),
@@ -25,13 +26,11 @@ class DownloadController {
     const {error, value} = validation.validate(ctx.request.body)
     ctx.assert(!error, 400, JSON.stringify({error}))
 
-    console.log(error, value)
-
-
     const download = new Download()
     download.poster = value.poster
     download.blurb = value.blurb
     download.title = value.title
+    download.referrer = value.referrer
     download.year = value.year
     download.urls = await Promise.all(value.urls.map(async (url: string) => await Url.create({url}).save()))
     download.type = await Type.findOne({name: value.type}) || await Type.create({name: value.type}).save()
