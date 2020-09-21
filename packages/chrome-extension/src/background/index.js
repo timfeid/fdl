@@ -36,20 +36,14 @@ function sendTabTo(respond) {
 }
 
 chrome.extension.onConnect.addListener((popup) => {
-  console.log('popup is here')
-  popup.onMessage.addListener((payload) => {
-    const type = payload.type
-    const respond = (payload) => {
-      console.log('responding with', payload)
-      popup.postMessage({ type, payload })
-    }
-    if (type === 'parseTab') {
-      sendTabTo(respond)
-    }
-    console.log(payload)
-  })
-
-  popup.onDisconnect.addListener(() => {
-    console.log('we lost the pop up')
-  })
+  const respond = (payload) => {
+    popup.postMessage({ type: 'parseTab', payload })
+  }
+  sendTabTo(respond)
+  // popup.onMessage.addListener((payload) => {
+  //   const type = payload.type
+  //   if (type === 'parseTab') {
+  //     sendTabTo(respond)
+  //   }
+  // })
 })

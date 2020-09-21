@@ -14,7 +14,7 @@ function doit() {
   const info = {
     url: window.location.href,
     name: document.getElementsByTagName('h1')[0].textContent,
-    type: 'show',
+    type: 'series',
     urls: [],
     imdb: null,
   }
@@ -59,7 +59,7 @@ function doit() {
         const seasonMatch = info.name.match(/S([0-9]{2,})/)
         if (seasonMatch) {
           info.season = Number(seasonMatch[1])
-          info.type = 'full-season'
+          info.type = 'series'
         } else {
           info.type = 'movie'
         }

@@ -144,8 +144,8 @@
               <template v-slot:[`item.createdAt`]="{ item }">
                 {{ timeago(item.createdAt) }}
               </template>
-              <template v-slot:[`item.updatedAt`]="{ item }">
-                {{ timeago(item.updatedAt) }}
+              <template v-slot:[`item.diff`]="{ item }">
+                {{ item.step === 'complete' ? diff(item) : '—' }}
               </template>
               <template v-slot:[`item.urls`]="{ item }">
                 {{ item.urls.length }}
@@ -183,7 +183,7 @@ export default class InfoIndex extends Vue {
     },
     { text: ' ', value: 'info' },
     { text: 'Added', value: 'createdAt' },
-    { text: 'Updaed', value: 'updatedAt' },
+    { text: 'Completed in', value: 'diff' },
     { text: 'Air Date', value: 'year' },
     { text: 'Blurb', value: 'blurb' },
     { text: 'URLs', value: 'urls' },
@@ -200,6 +200,21 @@ export default class InfoIndex extends Vue {
     }
 
     return 'mdi-movie'
+  }
+
+  diff (item: DownloadBundle) {
+    console.log(item)
+    const diff = moment.duration(moment(item.completedAt).diff(moment(item.startedAt)))
+
+    const times = []
+    const hours = Math.floor(diff.asHours())
+    if (hours) {
+      times.push(hours)
+    }
+    times.push(diff.minutes().toString().padStart(2, '0'))
+    times.push(diff.seconds().toString().padStart(2, '0'))
+
+    return times.join(':')
   }
 
   seriesInfo(bundle: DownloadBundle) {
