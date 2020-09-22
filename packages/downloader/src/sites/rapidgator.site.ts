@@ -59,7 +59,7 @@ export default class Rapidgator extends Site {
     return this.sid
   }
 
-  async transformUrl (url: string) {
+  async transformUrl (url: string, retrying = false): Promise<string> {
     if (await this.needsAuthentication()) {
       await this.authenticate()
     }
@@ -75,6 +75,11 @@ export default class Rapidgator extends Site {
     } catch (e) {
       console.log('Unable to transform URL:', e.response.status)
       console.log(e.response.data)
+      if (e.response.status === 401 && retrying === false) {
+        this.sid = undefined
+        return await this.transformUrl(url, true)
+      }
+      console.log('Retry failed!')
       return url
     }
   }
