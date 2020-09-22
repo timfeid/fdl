@@ -12,7 +12,7 @@
           <template v-for="download in downloads">
             <div
               :key="download.id"
-              style="margin: 0 2rem 2rem 0px; max-width: 150px"
+              style="margin: 0 2rem 2rem 0px; max-width: 150px; height: 230px"
             >
               <DownloadCard :download="download" />
             </div>

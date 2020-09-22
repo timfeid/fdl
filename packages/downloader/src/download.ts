@@ -21,6 +21,10 @@ export class Download extends EventEmitter {
   private basepath = config.downloadPath
   private previousTotal = 0
 
+  public get originalUrl () {
+    return this.url
+  }
+
   public get contentLength () {
     return this._contentLength
   }
@@ -117,6 +121,7 @@ export class Download extends EventEmitter {
       contentLength: this.contentLength,
       downloaded: this.downloaded,
       totalProgress: this.totalProgress,
+      originalUrl: this.originalUrl,
     }
   }
 }

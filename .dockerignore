@@ -1,0 +1,14 @@
+*
+!ops/tilt
+!package.json
+!yarn.lock
+!lerna.json
+!.npmrc
+!.deps
+!.env
+!packages/
+!.eslintrc.json
+!.eslintignore
+!postcss.config.js
+!tsconfig.json
+*/**/node_modules

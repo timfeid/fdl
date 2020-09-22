@@ -2,14 +2,19 @@
   <v-app id="popup">
     <div style="margin: 1rem; width: 400px">
       <v-card v-if="info" width="100%" style="margin-bottom: 1rem">
-        <v-card-text style="display: flex; max-height: 240px">
+        <v-card-text
+          style="display: flex"
+          :style="!currentDownload ? 'padding-bottom: 0' : ''"
+        >
           <div>
-            <v-img :src="info.poster" width="150" />
+            <DownloadCard v-if="currentDownload" :download="currentDownload" />
+
+            <v-img v-else :src="info.poster" width="150" />
           </div>
           <div
             style="
               margin-left: 1rem;
-              height: 220px;
+              height: 230px;
               overflow: hidden;
               text-overflow: ellipsis;
             "
@@ -32,11 +37,13 @@
           </div>
         </v-card-text>
         <v-spacer></v-spacer>
-        <v-card-actions>
+        <v-card-actions v-if="!currentDownload">
           <v-btn icon @click="download"><v-icon>mdi-download</v-icon></v-btn>
         </v-card-actions>
       </v-card>
-      <v-btn block outlined color="primary" @click="openDownloads">View all downloads</v-btn>
+      <v-btn block outlined color="primary" @click="openDownloads"
+        >View all downloads</v-btn
+      >
     </div>
   </v-app>
 </template>
@@ -44,10 +51,14 @@
 <script lang="ts">
 /// <reference types="chrome"/>
 import 'vuetify/dist/vuetify.min.css'
-import { IncomingDownload, InfoResponse } from '@fdl/types/src'
+import { DownloadBundle, IncomingDownload, InfoResponse } from '@fdl/types/src'
 import axios from 'axios'
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import DownloadCard from '../../../frontend/components/DownloadCard.vue'
+
+axios.defaults.baseURL = process.env.API_LOCATION
+
+const DownloadsStore = namespace('downloads')
 
 @Component({
   components: {
@@ -59,6 +70,15 @@ export default class App extends Vue {
   port: chrome.runtime.Port
   info: IncomingDownload | null = null
 
+  @DownloadsStore.State downloads: DownloadBundle[]
+
+  get currentDownload() {
+    if (!this.info) {
+      return
+    }
+    return this.downloads.find((d) => d.referrer === this.info.referrer)
+  }
+
   mounted() {
     this.port = chrome.runtime.connect({ name: 'fdl-popup' })
     this.port.onMessage.addListener(this.onMessage)
@@ -66,34 +86,30 @@ export default class App extends Vue {
   }
 
   download() {
-    axios.post('http://localhost:4242/downloads', {
+    axios.post('/downloads', {
       ...this.info,
       type: this.info.type.name,
     })
   }
 
-  async recievedImdb(info: any) {
-    const response = await axios.get(
-      'http://localhost:4242/info/movies?imdb=' + info.imdb
-    )
-    const data: InfoResponse = response.data
-    this.info = {
+  combineResponse(data: InfoResponse, info: any) {
+    return {
       ...data,
       referrer: info.url,
       urls: info.urls,
     }
   }
 
-  async recievedName(info: any) {
+  async recievedImdb(info: any) {
     const response = await axios.get(
-      'http://localhost:4242/info/tv-shows?query=' + info.name
+      `/info/imdb/${info.imdb}/?name=${info.name}`
     )
-    const data: InfoResponse = response.data
-    this.info = {
-      ...data,
-      referrer: info.url,
-      urls: info.urls,
-    }
+    this.info = this.combineResponse(response.data as InfoResponse, info)
+  }
+
+  async recievedName(info: any) {
+    const response = await axios.get('/info/tv-shows?query=' + info.name)
+    this.info = this.combineResponse(response.data as InfoResponse, info)
   }
 
   onMessage(message: any) {
@@ -103,7 +119,6 @@ export default class App extends Vue {
   }
 
   recievedParseTab(info: any) {
-    console.log('asdksnfdjgf')
     if (info.imdb) {
       return this.recievedImdb(info)
     }
@@ -111,8 +126,8 @@ export default class App extends Vue {
     return this.recievedName(info)
   }
 
-  openDownloads () {
-    chrome.tabs.create({ url: 'http://localhost:3000' })
+  openDownloads() {
+    chrome.tabs.create({ url: process.env.BASE_URL })
   }
 }
 </script>

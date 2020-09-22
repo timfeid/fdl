@@ -1,10 +1,11 @@
 import io from 'socket.io-client'
 import { Plugin } from '@nuxt/types'
-import { DownloadBundle } from '@fdl/types'
+import { DiskInfo, DownloadBundle } from '@fdl/types'
 import { Store } from 'vuex'
 
-function createSocket(store: Store<any>) {
-  const socket = io('http://localhost:4242')
+export function createSocket(store: Store<any>) {
+  console.log(process.env)
+  const socket = io(process.env.API_LOCATION)
 
   // socket.on('connect', () => {
   // })
@@ -15,6 +16,10 @@ function createSocket(store: Store<any>) {
 
   socket.on('download-queued', (download: DownloadBundle) => {
     store.commit('downloads/add', download)
+  })
+
+  socket.on('info', (info: DiskInfo) => {
+    store.commit('downloads/info', info)
   })
 
   return socket

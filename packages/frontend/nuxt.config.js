@@ -1,5 +1,3 @@
-import colors from 'vuetify/es5/util/colors'
-
 export default {
   /*
    ** Nuxt target
@@ -7,6 +5,7 @@ export default {
    */
   target: 'static',
   ssr: false,
+  env: process.env,
   /*
    ** Headers of the page
    ** See https://nuxtjs.org/api/configuration-head
@@ -56,7 +55,7 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: 'http://localhost:4242/',
+    baseURL: process.env.API_LOCATION,
   },
   /*
    ** vuetify module configuration

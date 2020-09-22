@@ -1,13 +1,15 @@
 import { ActionTree, MutationTree } from 'vuex'
-import { DownloadBundle } from '@fdl/types'
+import { DownloadBundle, SystemInformation } from '@fdl/types'
 import vue from 'vue'
 
 interface State {
   downloads: DownloadBundle[]
+  info: SystemInformation | null
 }
 
 export const state = (): State => ({
   downloads: [],
+  info: null,
 })
 
 export const mutations: MutationTree<State> = {
@@ -24,9 +26,15 @@ export const mutations: MutationTree<State> = {
     }
   },
 
+  info(state, info: SystemInformation) {
+    state.info = info
+  },
+
   setAll(state, downloads: DownloadBundle[]) {
     state.downloads = downloads
   },
 }
 
 export const actions: ActionTree<State, any> = {}
+
+export const namespaced = true

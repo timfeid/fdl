@@ -35,6 +35,9 @@
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^9.4.0",
     "md5": "^2.3.0",
-    "socket.io": "^2.3.0"
+    "node-df": "^0.1.4",
+    "nuxt": "^2.14.6",
+    "socket.io": "^2.3.0",
+    "systeminformation": "^4.27.5"
   }
 }

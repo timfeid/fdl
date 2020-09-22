@@ -15,7 +15,7 @@ class DownloadController {
       type: joi.string().allow('series').allow('movie').required(),
       title: joi.string().required(),
       year: joi.string().required(),
-      blurb: joi.string().required(),
+      blurb: joi.string().allow('').required(),
       poster: joi.string().required(),
       referrer: joi.string(),
       ...(ctx.request.body.type === 'series' ? {

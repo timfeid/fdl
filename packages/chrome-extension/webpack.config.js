@@ -1,4 +1,5 @@
 const path = require('path')
+const { join } = require('path')
 const webpack = require('webpack')
 const fg = require('fast-glob')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -8,9 +9,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const Dotenv = require('dotenv-webpack')
 
 // eslint-disable-next-line
 function configFunc(env, argv) {
+  console.log(env)
   const isDevMode = env.NODE_ENV === 'development'
   const config = {
     devtool: isDevMode ? 'eval-source-map' : false,
@@ -112,6 +115,7 @@ function configFunc(env, argv) {
         filename: 'popup.html',
         chunks: ['popup'],
       }),
+      new Dotenv({ path: join(__dirname, '../frontend/.env') }),
     ],
   }
 

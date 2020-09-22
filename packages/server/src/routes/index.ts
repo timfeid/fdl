@@ -12,6 +12,6 @@ router.post('/downloads', downloadController.download)
 router.get('/downloads', downloadController.list)
 
 router.get('/info/tv-shows', infoController.tvShows)
-router.get('/info/movies', infoController.movies)
+router.get('/info/imdb/:id', infoController.imdb)
 
 export {router}

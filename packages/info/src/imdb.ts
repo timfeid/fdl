@@ -9,7 +9,7 @@ export async function getInfo (imdb: string): Promise<InfoResponse> {
   const response = await axios.get(url)
 
   return {
-    type: {name: 'movie'},
+    type: {name: response.data.Type},
     title: response.data.Title,
     year: response.data.Year,
     blurb: response.data.Plot,

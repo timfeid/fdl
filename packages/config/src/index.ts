@@ -23,6 +23,8 @@ const setupConfig = (): Config => {
   if (process.env.NODE_ENV === 'test') {
     env = {...env, ...dotenv.config({path: processPath('./.test.env')}).parsed || {}}
   }
+  env = {...env, ...process.env}
+  console.log(env)
 
   return {
     tempPath: processPath(env.TEMP_PATH || '/tmp'),

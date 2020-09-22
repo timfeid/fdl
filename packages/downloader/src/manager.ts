@@ -14,6 +14,7 @@ export class Manager extends EventEmitter {
     const downloadingCount = this.downloads.filter(download => download.started).length
     if (!this.maxDownloads || this.maxDownloads <= 0 || downloadingCount < this.maxDownloads) {
       const nextDownload = this.downloads.find(download => !download.started)
+      console.log(nextDownload)
       if (nextDownload) {
         nextDownload.start()
         this.startNextDownload()

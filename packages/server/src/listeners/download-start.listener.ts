@@ -46,7 +46,7 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
       const newReport = getProgress(bundle)
       if (report !== newReport) {
 
-        app.emit('download-progress', bundle)
+        app.emit('update-progress', bundle)
         report = newReport
       }
     })
@@ -61,8 +61,8 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
   }))
 
   const extractor = findExtractor(info, downloads)
-  extractor.on('progress', () => app.emit('download-progress', convertToObject(info, downloads, extractor)))
-  extractor.on('complete', () => app.emit('download-progress', convertToObject(info, downloads, extractor)))
+  extractor.on('progress', () => app.emit('update-progress', convertToObject(info, downloads, extractor)))
+  extractor.on('complete', () => app.emit('update-progress', convertToObject(info, downloads, extractor)))
   await extractor.extract(downloads)
 
 

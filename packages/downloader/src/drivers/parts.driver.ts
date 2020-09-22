@@ -7,6 +7,8 @@ import path from 'path'
 // @ts-ignore
 import Multistream from 'multistream'
 import { config } from '@fdl/config'
+import { Download } from '../download'
+import md5 from 'md5'
 
 const TOTAL_PARTS = 8
 
@@ -36,12 +38,12 @@ class Part extends EventEmitter {
   stream: fs.WriteStream
   file: string
   downloaded = 0
-  constructor (parts: Parts, partNumber: number) {
+  constructor (parts: Parts, partNumber: number, tempName: string) {
     super()
     this.parts = parts
     this.partNumber = partNumber
     this.totalBytes = Math.floor(parts.download.contentLength / TOTAL_PARTS)
-    this.file = path.join(config.tempPath, `test.part.${this.partNumber+1}`)
+    this.file = path.join(config.tempPath, `${tempName}.part.${this.partNumber+1}`)
     this.stream = fs.createWriteStream(this.file)
   }
 
@@ -100,6 +102,12 @@ class Part extends EventEmitter {
 
 export default class Parts extends Driver {
   parts: Part[] = []
+  tempName: string
+
+  constructor (download: Download) {
+    super(download)
+    this.tempName = md5(download.originalUrl).substr(0, 10)
+  }
 
   async start () {
     this.createParts()
@@ -112,7 +120,7 @@ export default class Parts extends Driver {
 
   private createParts () {
     for (let i = 0;i < TOTAL_PARTS; i++) {
-      this.parts.push(new Part(this, i))
+      this.parts.push(new Part(this, i, this.tempName))
     }
   }
 

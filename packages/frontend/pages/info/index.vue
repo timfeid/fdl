@@ -8,112 +8,75 @@
     </v-toolbar>
     <v-layout class="align-baseline ma-3">
       <v-container class="fill-height" fluid>
-        <v-row>
-          <v-col cols="2" class="py-0">
+        <v-row v-if="currentInfo">
+          <v-col cols="12" md="6" xl="2" class="mb-3 mb-xl-0 py-0">
             <DiskUsage
-              used="285.55"
-              capacity="491.18"
-              title="Download Path"
+              :used="parseInt(currentInfo.downloadDisk.used, 10)"
+              :capacity="
+                parseInt(currentInfo.downloadDisk.available, 10) +
+                parseInt(currentInfo.downloadDisk.used, 10)
+              "
+              title="Downloads"
               color="orange darken-1"
             />
           </v-col>
-          <v-col cols="2" class="py-0">
+          <v-col cols="12" md="6" xl="2" class="mb-3 mb-xl-0 py-0">
             <DiskUsage
-              used="10244.53"
-              capacity="15444.68"
+              :used="parseInt(currentInfo.nasDisk.used, 10)"
+              :capacity="
+                parseInt(currentInfo.nasDisk.available, 10) +
+                parseInt(currentInfo.nasDisk.used, 10)
+              "
               title="NAS"
               icon="mdi-server-network"
               color="green"
             />
           </v-col>
-          <v-col cols="2" class="py-0">
+          <v-col cols="12" md="6" xl="2" class="mb-3 mb-xl-0 py-0">
             <DiskUsage
-              used="20.7"
-              capacity="31"
+              :used="Math.round(currentInfo.mem.used / 1073741820)"
+              :capacity="Math.round(currentInfo.mem.total / 1073741820)"
               title="RAM"
               icon="mdi-memory"
               color="blue"
             />
           </v-col>
-          <v-col cols="2" class="py-0">
-            <v-card class="mx-auto text-center" color="indigo" dark>
-              <v-card-text>
-                <v-sheet color="rgba(0, 0, 0, .12)">
-                  <v-sparkline
-                    :value="value"
-                    :labels="labels"
-                    color="rgba(255, 255, 255, .7)"
-                    height="93"
-                    padding="24"
-                    stroke-linecap="round"
-                    smooth
-                    fill
-                    show-labels
-                  >
-                  </v-sparkline>
-                </v-sheet>
-              </v-card-text>
-
-              <v-card-title class="pt-0">
-                <v-icon large left>mdi-cpu-64-bit</v-icon>
-                <div>CPU Usage</div>
-                <div class="ml-auto font-weight-thin">1.2%</div>
-              </v-card-title>
-            </v-card>
+          <v-col cols="12" md="6" xl="2" class="mb-3 mb-xl-0 py-0">
+            <Graph
+              color="indigo"
+              title="CPU Usage"
+              :value-property="
+                (info) => parseFloat(info.currentLoad.currentload.toFixed(2))
+              "
+              :value="info"
+              icon="mdi-cpu-64-bit"
+              unit="%"
+            />
           </v-col>
 
-          <v-col cols="2" class="py-0">
-            <v-card class="mx-auto text-center" color="purple" dark>
-              <v-card-text>
-                <v-sheet color="rgba(0, 0, 0, .12)">
-                  <v-sparkline
-                    :value="value"
-                    :labels="labels"
-                    color="rgba(255, 255, 255, .7)"
-                    height="93"
-                    padding="24"
-                    stroke-linecap="round"
-                    smooth
-                    fill
-                    show-labels
-                  >
-                  </v-sparkline>
-                </v-sheet>
-              </v-card-text>
-
-              <v-card-title style="padding-top: 1px !important">
-                <v-icon large left>mdi-speedometer</v-icon>
-                <div>Download Speed</div>
-                <div class="ml-auto font-weight-thin">110mb/s</div>
-              </v-card-title>
-            </v-card>
+          <v-col cols="12" md="6" xl="2" class="mb-3 mb-xl-0 py-0">
+            <Graph
+              color="purple"
+              title="DL Speed"
+              :value-property="
+                (info) =>
+                  parseFloat((info.network[0].rx_sec / 1000000).toFixed(2))
+              "
+              :value="info"
+              icon="mdi-speedometer"
+              unit="mb/s"
+            />
           </v-col>
 
-          <v-col cols="2" class="py-0">
-            <v-card class="mx-auto text-center" color="red" dark>
-              <v-card-text>
-                <v-sheet color="rgba(0, 0, 0, .12)">
-                  <v-sparkline
-                    :value="value"
-                    :labels="labels"
-                    color="rgba(255, 255, 255, .7)"
-                    height="93"
-                    padding="24"
-                    stroke-linecap="round"
-                    smooth
-                    fill
-                    show-labels
-                  >
-                  </v-sparkline>
-                </v-sheet>
-              </v-card-text>
-
-              <v-card-title style="padding-top: 1px !important">
-                <v-icon large left>mdi-thermometer</v-icon>
-                <div>CPU Temperature</div>
-                <div class="ml-auto font-weight-thin">32ø</div>
-              </v-card-title>
-            </v-card>
+          <v-col cols="12" md="6" xl="2" class="mb-3 mb-xl-0 py-0">
+            <Graph
+              color="red"
+              title="CPU Temp"
+              :value-property="(info) => info.temp.main"
+              :value="info"
+              icon="mdi-thermometer"
+              unit="°C"
+            />
           </v-col>
         </v-row>
         <div class="mt-5" style="width: 100%">
@@ -141,6 +104,15 @@
               <template v-slot:[`item.info`]="{ item }">
                 {{ seriesInfo(item) }}
               </template>
+              <template v-slot:[`item.size`]="{ item }">
+                {{
+                  (
+                    item.urls
+                      .map((d) => d.contentLength)
+                      .reduce((a, b) => a + b) / 1073741824
+                  ).toFixed(2)
+                }}GB
+              </template>
               <template v-slot:[`item.createdAt`]="{ item }">
                 {{ timeago(item.createdAt) }}
               </template>
@@ -153,6 +125,11 @@
               <template v-slot:[`item.step`]="{ item }">
                 {{ item.step.charAt(0).toUpperCase() }}{{ item.step.substr(1) }}
               </template>
+              <template v-slot:[`item.blurb`]="{ item }">
+                <div class="movie-blurb" :style="`width: ${blurbWidth}`">
+                  {{ item.blurb }}
+                </div>
+              </template>
             </v-data-table>
           </v-card>
         </div>
@@ -161,7 +138,7 @@
   </div>
 </template>
 <script lang="ts">
-import { DownloadBundle } from '@fdl/types'
+import { DownloadBundle, SystemInformation } from '@fdl/types'
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import moment from 'moment'
 
@@ -170,9 +147,11 @@ const DownloadsStore = namespace('downloads')
 @Component
 export default class InfoIndex extends Vue {
   @DownloadsStore.State downloads: DownloadBundle[]
-  value = [3.1, 4.2, 4.3, 3.1, 2.6, 1.1, 3.7, 4.1, 2.9, 3.2]
+  @DownloadsStore.State info: SystemInformation[]
 
-  labels = ['10s', '9s', '8s', '7s', '6s', '5s', '4s', '3s', '2s', '1s']
+  get currentInfo() {
+    return this.info ? this.info[this.info.length - 1] : null
+  }
 
   search = ''
   headers = [
@@ -182,6 +161,7 @@ export default class InfoIndex extends Vue {
       value: 'title',
     },
     { text: ' ', value: 'info' },
+    { text: 'Size', value: 'size' },
     { text: 'Added', value: 'createdAt' },
     { text: 'Completed in', value: 'diff' },
     { text: 'Air Date', value: 'year' },
@@ -202,9 +182,10 @@ export default class InfoIndex extends Vue {
     return 'mdi-movie'
   }
 
-  diff (item: DownloadBundle) {
-    console.log(item)
-    const diff = moment.duration(moment(item.completedAt).diff(moment(item.startedAt)))
+  diff(item: DownloadBundle) {
+    const diff = moment.duration(
+      moment(item.completedAt).diff(moment(item.startedAt))
+    )
 
     const times = []
     const hours = Math.floor(diff.asHours())
@@ -228,5 +209,28 @@ export default class InfoIndex extends Vue {
 
     return str
   }
+
+  get blurbWidth() {
+    switch (this.$vuetify.breakpoint.name) {
+      case 'xs':
+        return '220px'
+      case 'sm':
+        return '400px'
+      case 'md':
+        return '500px'
+      case 'lg':
+        return '600px'
+      case 'xl':
+        return '800px'
+    }
+  }
 }
 </script>
+
+<style lang="scss">
+.movie-blurb {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+</style>

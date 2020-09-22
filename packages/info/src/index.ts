@@ -1,4 +1,4 @@
 import * as TVService from './tv'
-import * as MovieService from './movies'
+import * as ImdbService from './imdb'
 
-export {TVService, MovieService}
+export {TVService, ImdbService}

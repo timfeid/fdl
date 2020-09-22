@@ -59,7 +59,6 @@ export async function search (query: string): Promise<SearchResult[]> {
 export async function findEpisode (seriesId: number, seasonNumber: string | number, episodeNumber: string | number): Promise<null | EpisodeResponse> {
   seasonNumber = typeof seasonNumber !== 'number' ? parseInt(seasonNumber, 10) : seasonNumber
   episodeNumber = typeof episodeNumber !== 'number' ? parseInt(episodeNumber, 10) : episodeNumber
-
   const url = `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}?api_key=${MOVIE_DB_KEY}&language=en-US`
 
   try {
@@ -74,16 +73,29 @@ export async function findEpisode (seriesId: number, seasonNumber: string | numb
   }
 }
 
-export async function parseTitle (query: string): Promise<InfoResponse | null> {
-  let episodeNumber: number
+export function extractSeasonAndEpisode (query: string) {
   let season: number
   let name = query.replace(/\./g, ' ').trim()
   let episode: number | null = null
+
   const match = name.match(/^(.*?)s?(\d+)\D(\d+)/i)
   if (match) {
     season = parseInt(match[2].trim(), 10)
-    episodeNumber = parseInt(match[3].trim(), 10)
+    episode = match[3].trim() ? parseInt(match[3].trim(), 10) : null
     name = match[1].replace(/\./g, ' ').trim().replace(/\d{4}/g, '').trim()
+  }
+
+  return {
+    season, name, episode
+  }
+}
+
+export async function parseTitle (query: string, name?: string): Promise<InfoResponse | null> {
+  const info = this.extractSeasonAndEpisode(query)
+  const {season} = info
+  let {episode} = info
+  if (!name) {
+    name = info.name
   }
 
   const shows = await search(name)
@@ -94,11 +106,13 @@ export async function parseTitle (query: string): Promise<InfoResponse | null> {
     const poster = shows[0].posterPath
     let blurb = shows[0].blurb
 
-    if (episodeNumber) {
-      const e = await findEpisode(shows[0].id, season, episodeNumber)
+    if (episode) {
+      const e = await findEpisode(shows[0].id, season, episode)
       if (e) {
         blurb = e.blurb
         episode = e.number
+      } else {
+        episode = null
       }
     }
 

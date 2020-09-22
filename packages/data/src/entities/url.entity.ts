@@ -8,6 +8,9 @@ export class Url extends BaseEntity implements UrlInterface {
   @Column()
   url: string
 
+  @Column({nullable: true})
+  contentLength: number | null
+
   @ManyToMany(() => Download)
   @JoinTable()
   download: Download
