@@ -21,6 +21,7 @@ type ApiResponseResult = {
   overview: string
   poster_path: string | null
   release_date?: string
+  media_type: string
 }
 
 export type EpisodeResponse = {
@@ -38,6 +39,7 @@ export type SearchResult = {
   posterPath: string
   backdropPath: string
   blurb: string
+  type: 'movie' | 'series'
 }
 
 export async function getMovieDbSeries(series: number, season?: number): Promise<any> {
@@ -50,21 +52,23 @@ export async function getMovieDbSeries(series: number, season?: number): Promise
   return data
 }
 
-export async function search (query: string, type: 'tv' | 'movie' = 'tv'): Promise<SearchResult[]> {
+export async function search (query: string, type: 'tv' | 'movie' | 'multi' = 'tv'): Promise<SearchResult[]> {
   query = encodeURI(query)
   const url = `https://api.themoviedb.org/3/search/${type}?api_key=${MOVIE_DB_KEY}&language=en-US&query=${query}&page=1`
   const response = await axios.get(url)
 
   return response.data.results.map((result: ApiResponseResult): SearchResult => {
+    const type = result.media_type === 'tv' ? 'series' : 'movie'
     return {
       id: result.id,
       originalName: result.original_name || result.original_title,
       name: result.name || result.title,
       popularity: result.popularity,
-      firstAirDate: result.first_air_date || result.release_date || '',
+      firstAirDate: (type === 'movie' && result.release_date) ? result.release_date.substr(0, 4) : (result.first_air_date || result.release_date || ''),
       posterPath: result.poster_path ? `https://image.tmdb.org/t/p/original${result.poster_path}` : null,
       backdropPath: result.backdrop_path ? `https://image.tmdb.org/t/p/original${result.backdrop_path}` : null,
       blurb: result.overview,
+      type,
     }
   })
 }

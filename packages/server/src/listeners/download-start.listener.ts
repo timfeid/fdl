@@ -58,8 +58,12 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
   manager.startNextDownload()
 
   await Promise.all(downloads.map(async (download) => {
+    console.log('waiting on', download.originalUrl)
     return new Promise(resolve => {
-      download.on('complete', () => resolve(download))
+      download.on('complete', () => {
+        console.log('complete!', download.originalUrl)
+        resolve(download)
+      })
     })
   }))
 

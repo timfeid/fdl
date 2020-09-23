@@ -27,16 +27,11 @@ class InfoController {
   public async search (ctx: Context) {
     const validation = joi.object({
       query: joi.string().required(),
-      type: joi.string().allow('series').allow('movie').required(),
     })
     const {error, value} = validation.validate(ctx.request.query)
     ctx.assert(!error, 400, JSON.stringify({error}))
 
-    if (value.type === 'series') {
-      ctx.body = await TVService.search(value.query)
-    } else {
-      ctx.body = await TVService.search(value.query, 'movie')
-    }
+    ctx.body = await TVService.search(value.query, 'multi')
   }
 
   public async series (ctx: Context) {

@@ -66,6 +66,7 @@ export class Download extends EventEmitter {
       this.driver = matchDriver(this, response)
       this.emit('started', this)
       await this.driver.start()
+      console.log('complete emitted for', this.toObject)
       this.emit('complete', this)
     } catch (e) {
       this.emit('error', e)

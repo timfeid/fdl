@@ -36,22 +36,10 @@
                 <div class="d-flex align-baseline">
                   <div style="flex: 1; margin-right: 1rem">
                     <v-text-field
-                      v-model="search.query"
-                      :label="`Name of ${
-                        search.type === 'series' ? 'series' : 'movie'
-                      }`"
+                      v-model="search"
+                      label="Name of series or movie"
                       required
                     ></v-text-field>
-                  </div>
-                  <div style="margin-right: 1rem">
-                    <v-btn-toggle v-model="search.type" dense mandatory>
-                      <v-btn value="series">
-                        <v-icon class="mr-3">mdi-television</v-icon> Series
-                      </v-btn>
-                      <v-btn value="movie">
-                        <v-icon class="mr-3">mdi-movie</v-icon> Movie
-                      </v-btn>
-                    </v-btn-toggle>
                   </div>
                   <div class="align-self-center">
                     <v-btn type="submit" color="info" icon
@@ -97,9 +85,17 @@
                             "
                           ></v-icon>
                         </v-btn>
-                        <v-card-title class="mt-auto">{{
-                          result.name
-                        }}</v-card-title>
+                        <v-card-title class="mt-auto">
+                          <v-icon
+                            class="white--text mr-4"
+                            v-text="
+                              result.type === 'series'
+                                ? 'mdi-television'
+                                : 'mdi-movie'
+                            "
+                          />
+                          {{ result.name }}
+                        </v-card-title>
                       </div>
                     </v-img>
                   </v-card>
@@ -152,7 +148,11 @@
                 </v-item>
               </v-item-group>
               <v-item-group
-                v-if="seasonInfo && search.type === 'series'"
+                v-if="
+                  seasonInfo &&
+                  currentSelectionObj &&
+                  currentSelectionObj.type === 'series'
+                "
                 v-model="selectedEpisode"
                 class="d-flex flex-wrap mt-4"
               >
@@ -279,7 +279,10 @@
       dark
       elevation="24"
     >
-      <v-icon style="margin-top: -5px; margin-right: 0.5rem">mdi-check-bold</v-icon> Download was added successfully
+      <v-icon style="margin-top: -5px; margin-right: 0.5rem"
+        >mdi-check-bold</v-icon
+      >
+      Download was added successfully
     </v-snackbar>
   </div>
 </template>
@@ -294,10 +297,7 @@ export default class AddIndex extends Vue {
 
   rawUrls = ''
 
-  search = {
-    query: '',
-    type: 'series',
-  }
+  search = ''
 
   error: any = {}
 
@@ -332,7 +332,11 @@ export default class AddIndex extends Vue {
 
   async getSeasonData() {
     this.seriesInfo = null
-    if (this.search.type === 'series' && this.selected) {
+    if (
+      this.currentSelectionObj &&
+      this.currentSelectionObj.type === 'series' &&
+      this.selected
+    ) {
       const results = await this.$axios(`/info/series/${this.selected}`)
 
       this.seriesInfo = results.data
@@ -352,7 +356,7 @@ export default class AddIndex extends Vue {
 
   async performSearch() {
     const results = await this.$axios('/info/search', {
-      params: this.search,
+      params: { query: this.search },
     })
 
     this.results = results.data
@@ -437,7 +441,7 @@ export default class AddIndex extends Vue {
       return {
         urls: this.urls,
         referrer: this.referrer,
-        type: this.search.type,
+        type: this.currentSelectionObj.type,
         title: this.currentSelectionObj.name,
         year: this.year,
         blurb: this.selectedEpisodeObj

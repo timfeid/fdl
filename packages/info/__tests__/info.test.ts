@@ -41,6 +41,24 @@ describe('gets information about movies/shows', () => {
     expect(results[0]).to.have.property('blurb').be.a('string')
   })
 
+  it('multisearch the moviedb', async () => {
+    const results = await search('Californ', 'multi')
+
+    expect(results).to.containSubset([
+      {
+        name: 'Californication',
+        firstAirDate: '2007-08-13',
+        type: 'series',
+      },
+      {
+        name: 'King of California',
+        firstAirDate: '2007',
+        type: 'movie',
+      },
+    ])
+    expect(results[0]).to.have.property('blurb').be.a('string')
+  })
+
   it('parses name, season', async () => {
     const result = await parseTitle('South.Park.S23.1080p.HDTV.x264-CRAVERS ~ 32.2 GB')
 

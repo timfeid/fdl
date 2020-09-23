@@ -87,15 +87,20 @@ class Part extends EventEmitter {
 
       return await new Promise((resolve, reject) => {
         response.data.on('data', this.progress.bind(this))
-        response.data.on('end', this.completed.bind(this))
-        response.data.on('end', resolve)
-        response.data.on('error', this.error)
-        response.data.on('error', reject)
+        response.data.on('end', () => {
+          this.completed()
+          resolve()
+        })
+        response.data.on('error', (err: Error) => {
+          this.error(err)
+          reject(err)
+        })
         response.data.pipe(this.stream)
       })
 
     } catch (e) {
       this.error(e)
+      console.error(e)
     }
   }
 }
