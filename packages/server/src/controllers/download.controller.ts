@@ -20,7 +20,7 @@ class DownloadController {
       referrer: joi.string(),
       ...(ctx.request.body.type === 'series' ? {
         season: joi.number().required(),
-        episode: joi.number(),
+        episode: joi.number().optional().allow(null),
       } : {})
     }).unknown()
     const {error, value} = validation.validate(ctx.request.body)

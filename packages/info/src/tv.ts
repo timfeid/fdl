@@ -93,12 +93,12 @@ export async function findEpisode (seriesId: number, seasonNumber: string | numb
 export function extractSeasonAndEpisode (query: string) {
   let season: number
   let name = query.replace(/\./g, ' ').trim()
-  let episode: number | null = null
+  let episode: number | undefined = undefined
 
   const match = name.match(/^(.*?)s?(\d+)\D(\d+)/i)
   if (match) {
     season = parseInt(match[2].trim(), 10)
-    episode = match[3].trim() ? parseInt(match[3].trim(), 10) : null
+    episode = match[3].trim() ? parseInt(match[3].trim(), 10) : undefined
     name = match[1].replace(/\./g, ' ').trim().replace(/\d{4}/g, '').trim()
   }
 
@@ -129,7 +129,7 @@ export async function parseTitle (query: string, name?: string): Promise<InfoRes
         blurb = e.blurb
         episode = e.number
       } else {
-        episode = null
+        episode = undefined
       }
     }
 
