@@ -13,5 +13,8 @@ router.get('/downloads', downloadController.list)
 
 router.get('/info/tv-shows', infoController.tvShows)
 router.get('/info/imdb/:id', infoController.imdb)
+router.get('/info/search', infoController.search)
+router.get('/info/series/:seriesId/:season', infoController.season)
+router.get('/info/series/:seriesId', infoController.series)
 
 export {router}

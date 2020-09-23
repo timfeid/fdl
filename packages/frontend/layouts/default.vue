@@ -24,6 +24,14 @@
             <v-list-item-title> Info </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link nuxt :to="{ name: 'add' }">
+          <v-list-item-action>
+            <v-icon>mdi-link-plus</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title> Add Download </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 

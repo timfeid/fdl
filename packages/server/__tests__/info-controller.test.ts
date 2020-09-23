@@ -46,4 +46,48 @@ describe('info controller', () => {
       season: 1,
     })
   })
+
+  it('can search tv shows', async () => {
+    const query = 'South Park'
+    const response = await request(app.callback()).get(`/info/search/?query=${query}&type=series`).type('json')
+    expect(response.status).to.eq(200)
+    expect(response.body).to.containSubset([
+      {
+        originalName: 'South Park',
+        name: 'South Park',
+        firstAirDate: '1997-08-13',
+      },
+    ])
+  })
+
+  it('can search movies', async () => {
+    const query = 'King of California'
+    const response = await request(app.callback()).get(`/info/search/?query=${query}&type=movie`).type('json')
+    expect(response.status).to.eq(200)
+    expect(response.body).to.containSubset([
+      {
+        originalName: 'King of California',
+        name: 'King of California',
+        firstAirDate: '2007-01-24',
+      },
+    ])
+  })
+
+  it('can get a series', async () => {
+    const query = '2190'
+    const response = await request(app.callback()).get(`/info/series/${query}`).type('json')
+    expect(response.status).to.eq(200)
+    expect(response.body).to.containSubset({
+      name: 'South Park',
+    })
+  })
+
+  it('can get a series season', async () => {
+    const query = '2190'
+    const response = await request(app.callback()).get(`/info/series/${query}/0`).type('json')
+    expect(response.status).to.eq(200)
+    expect(response.body).to.containSubset({
+      season_number: 0,
+    })
+  })
 })

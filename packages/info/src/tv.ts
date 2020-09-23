@@ -5,19 +5,22 @@ import { InfoResponse } from '@fdl/types'
 const MOVIE_DB_KEY = config.env.MOVIE_DB_KEY
 
 type ApiResponseResult = {
-  original_name: string
+  original_name?: string
+  original_title?: string
   genre_ids: number[]
-  name: string
+  name?: string
+  title?: string
   popularity: number
   origin_country: string[]
   vote_count: number
-  first_air_date: string
-  backdrop_path: string
+  first_air_date?: string
+  backdrop_path: string | null
   original_language: string
   id: number
   vote_average: number
   overview: string
-  poster_path: string
+  poster_path: string | null
+  release_date?: string
 }
 
 export type EpisodeResponse = {
@@ -37,20 +40,32 @@ export type SearchResult = {
   blurb: string
 }
 
-export async function search (query: string): Promise<SearchResult[]> {
+export async function getMovieDbSeries(series: number, season?: number): Promise<any> {
+  let url = `https://api.themoviedb.org/3/tv/${series}`
+  if (season !== undefined) {
+    url += `/season/${season}`
+  }
+  url += `?api_key=${MOVIE_DB_KEY}&language=en-US`
+  console.log(url)
+  const {data} = await axios.get(url)
+  return data
+}
+
+export async function search (query: string, type: 'tv' | 'movie' = 'tv'): Promise<SearchResult[]> {
   query = encodeURI(query)
-  const url = `https://api.themoviedb.org/3/search/tv?api_key=${MOVIE_DB_KEY}&language=en-US&query=${query}&page=1`
+  const url = `https://api.themoviedb.org/3/search/${type}?api_key=${MOVIE_DB_KEY}&language=en-US&query=${query}&page=1`
   const response = await axios.get(url)
+  console.log(response.data)
 
   return response.data.results.map((result: ApiResponseResult): SearchResult => {
     return {
       id: result.id,
-      originalName: result.original_name,
-      name: result.name,
+      originalName: result.original_name || result.original_title,
+      name: result.name || result.title,
       popularity: result.popularity,
-      firstAirDate: result.first_air_date,
-      posterPath: `https://image.tmdb.org/t/p/original${result.poster_path}`,
-      backdropPath: `https://image.tmdb.org/t/p/original${result.backdrop_path}`,
+      firstAirDate: result.first_air_date || result.release_date || '',
+      posterPath: result.poster_path ? `https://image.tmdb.org/t/p/original${result.poster_path}` : null,
+      backdropPath: result.backdrop_path ? `https://image.tmdb.org/t/p/original${result.backdrop_path}` : null,
       blurb: result.overview,
     }
   })
