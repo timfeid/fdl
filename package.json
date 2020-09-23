@@ -4,6 +4,9 @@
   "main": "index.js",
   "author": "Tim Feid <tim.feid@tellimer.com>",
   "private": true,
+  "scripts": {
+    "docker": "scripts/deps.sh && docker build -t fdl ."
+  },
   "workspaces": [
     "packages/*"
   ],

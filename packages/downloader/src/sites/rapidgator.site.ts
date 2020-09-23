@@ -19,6 +19,12 @@ export default class Rapidgator extends Site {
     super()
     this.username = config.env.RAPIDGATOR_USERNAME || ''
     this.password = config.env.RAPIDGATOR_PASSWORD || ''
+    this.keepAuthenticated()
+  }
+
+  async keepAuthenticated () {
+    await this.authenticate()
+    setTimeout(this.keepAuthenticated.bind(this), 3600000)
   }
 
   match (url: string) {

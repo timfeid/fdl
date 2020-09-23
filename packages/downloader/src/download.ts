@@ -103,6 +103,9 @@ export class Download extends EventEmitter {
       this.previousTotal = this.totalProgress
       this.emit('progress', this)
     }
+    if (this.downloaded === this.contentLength) {
+      this.emit('downloading-complete')
+    }
   }
 
   private async getHeaders () {

@@ -24,10 +24,9 @@ const setupConfig = (): Config => {
     env = {...env, ...dotenv.config({path: processPath('./.test.env')}).parsed || {}}
   }
   env = {...env, ...process.env}
-  console.log(env)
 
   return {
-    tempPath: processPath(env.TEMP_PATH || '/tmp'),
+    tempPath: processPath(env.TEMP_PATH || env.DOWNLOAD_PATH || '/tmp'),
     contentPath: processPath(env.CONTENT_PATH || '~/'),
     downloadPath: processPath(env.DOWNLOAD_PATH || env.TEMP_PATH || '/tmp'),
     unrarBin: processPath(env.UNRAR_BIN || '/usr/local/bin/unrar'),

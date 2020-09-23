@@ -13,7 +13,6 @@ const Dotenv = require('dotenv-webpack')
 
 // eslint-disable-next-line
 function configFunc(env, argv) {
-  console.log(env)
   const isDevMode = env.NODE_ENV === 'development'
   const config = {
     devtool: isDevMode ? 'eval-source-map' : false,

@@ -11,4 +11,5 @@
 !.eslintignore
 !postcss.config.js
 !tsconfig.json
+!scripts/
 */**/node_modules

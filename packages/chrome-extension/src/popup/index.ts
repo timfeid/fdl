@@ -8,7 +8,6 @@ import * as downloads from '../../../frontend/store/downloads'
 import App from './App.vue'
 
 axios.defaults.baseURL = process.env.API_LOCATION
-console.log(process.env.API_LOCATION)
 
 Vue.use(vuex)
 const store = new vuex.Store({

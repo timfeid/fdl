@@ -17,7 +17,7 @@ function convertToObject (info: DownloadInfo, downloads: Download[], extractor?:
     step: extractor ? (extractor.complete ? Step.COMPLETE : Step.EXTRACT) : (downloads.find(d => d.started) ? Step.DOWNLOAD : Step.QUEUE),
     downloadProgress: Math.round(
       (100 * downloads.reduce((val, d) => val + d.downloaded, 0)) /
-        downloads.reduce((val, d) => val + d.contentLength, 0)
+        downloads.reduce((val, d) => val + (d.contentLength || 0), 0)
     ),
   }
 }
@@ -41,6 +41,9 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
   app.emit('download-queued', convertToObject(info, downloads))
 
   for (const download of downloads) {
+    download.on('error', (err) => {
+      app.emit('error', err)
+    })
     download.on('progress', () => {
       const bundle = convertToObject(info, downloads)
       const newReport = getProgress(bundle)

@@ -4,6 +4,7 @@
     :height="(cardHeight + 5).toString()"
     :style="`width: ${cardWidth}px;`"
     active-click
+    @click.native="showInfoInConsole"
   >
     <template v-slot:front>
       <v-card :height="cardHeight" :width="cardWidth">
@@ -93,6 +94,10 @@ export default class InfoIndex extends Vue {
       default:
         return 0
     }
+  }
+
+  showInfoInConsole() {
+    console.log(this.download)
   }
 }
 </script>

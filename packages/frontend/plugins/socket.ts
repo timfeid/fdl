@@ -4,8 +4,7 @@ import { DiskInfo, DownloadBundle } from '@fdl/types'
 import { Store } from 'vuex'
 
 export function createSocket(store: Store<any>) {
-  console.log(process.env)
-  const socket = io(process.env.API_LOCATION)
+  const socket = io(process.env.API_LOCATION || 'http://localhost:4242')
 
   // socket.on('connect', () => {
   // })

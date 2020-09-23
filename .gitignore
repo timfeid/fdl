@@ -27,3 +27,5 @@ test-data/*
 
 package-lock.json
 database.sqlite
+
+.deps

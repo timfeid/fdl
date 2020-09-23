@@ -46,7 +46,6 @@ export async function getMovieDbSeries(series: number, season?: number): Promise
     url += `/season/${season}`
   }
   url += `?api_key=${MOVIE_DB_KEY}&language=en-US`
-  console.log(url)
   const {data} = await axios.get(url)
   return data
 }
@@ -55,7 +54,6 @@ export async function search (query: string, type: 'tv' | 'movie' = 'tv'): Promi
   query = encodeURI(query)
   const url = `https://api.themoviedb.org/3/search/${type}?api_key=${MOVIE_DB_KEY}&language=en-US&query=${query}&page=1`
   const response = await axios.get(url)
-  console.log(response.data)
 
   return response.data.results.map((result: ApiResponseResult): SearchResult => {
     return {

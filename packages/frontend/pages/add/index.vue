@@ -10,7 +10,8 @@
       <v-container class="fill-height" fluid>
         <template v-if="error && error.error && error.error.details">
           <v-alert
-            v-for="detail in error.error.details"
+            v-for="(detail, i) in error.error.details"
+            :key="i"
             type="error"
             width="100%"
             class="mb-4"
@@ -151,7 +152,7 @@
                 </v-item>
               </v-item-group>
               <v-item-group
-                v-if="seasonInfo"
+                v-if="seasonInfo && search.type === 'series'"
                 v-model="selectedEpisode"
                 class="d-flex flex-wrap mt-4"
               >
@@ -249,21 +250,41 @@
                 class="white--text full-height"
               >
                 <v-card-title>{{ downloadInfo.title }}</v-card-title>
-                <v-card-subtitle class="white--text" v-if="downloadInfo.season !== undefined">Season {{ downloadInfo.season }} <span v-if="downloadInfo.episode !== undefined">Episode {{ downloadInfo.episode }}</span></v-card-subtitle>
+                <v-card-subtitle
+                  v-if="downloadInfo.season !== undefined"
+                  class="white--text"
+                  >Season {{ downloadInfo.season }}
+                  <span v-if="downloadInfo.episode !== undefined"
+                    >Episode {{ downloadInfo.episode }}</span
+                  ></v-card-subtitle
+                >
               </v-img>
               <v-card-text>
                 {{ downloadInfo.blurb }}
               </v-card-text>
             </v-card>
+            <v-btn color="success" @click="download">Download</v-btn>
           </v-stepper-content>
         </v-stepper>
       </v-container>
     </v-layout>
+
+    <v-snackbar
+      :timeout="6000"
+      :value="showToast"
+      absolute
+      right
+      top
+      color="success"
+      dark
+      elevation="24"
+    >
+      <v-icon style="margin-top: -5px; margin-right: 0.5rem">mdi-check-bold</v-icon> Download was added successfully
+    </v-snackbar>
   </div>
 </template>
 
 <script lang="ts">
-import { DownloadInfo } from '@fdl/types'
 import { Component, Vue } from 'nuxt-property-decorator'
 import { SearchResult } from '@fdl/info/src/tv'
 
@@ -285,6 +306,8 @@ export default class AddIndex extends Vue {
   selectedSeason = 0
 
   selectedEpisode = 0
+
+  showToast = false
 
   results: SearchResult[] = []
 
@@ -319,7 +342,6 @@ export default class AddIndex extends Vue {
   async getEpisodesData() {
     this.seasonInfo = null
     if (this.selectedSeasonObj) {
-      console.log(this.selectedSeasonObj)
       const results = await this.$axios(
         `/info/series/${this.selected}/${this.selectedSeasonObj.season_number}`
       )
@@ -390,7 +412,10 @@ export default class AddIndex extends Vue {
   }
 
   get urls() {
-    return this.rawUrls.split('\n').map((url) => url.trim())
+    return this.rawUrls
+      .split('\n')
+      .map((url) => url.trim())
+      .filter((url) => !!url)
   }
 
   get year() {
@@ -438,6 +463,9 @@ export default class AddIndex extends Vue {
       this.selectedSeason = 0
       this.selectedEpisode = 0
       this.selected = 0
+      this.step = 0
+      this.showToast = true
+      this.$router.replace('/')
     } catch (e) {
       this.error = e.response.data
     }
