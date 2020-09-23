@@ -94,7 +94,13 @@
                                 : 'mdi-movie'
                             "
                           />
-                          {{ result.name }}
+                          {{ result.name }} &nbsp;
+                          <span
+                            v-if="
+                              result.type === 'movie' && result.firstAirDate
+                            "
+                            v-text="`(${result.firstAirDate})`"
+                          />
                         </v-card-title>
                       </div>
                     </v-img>
