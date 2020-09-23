@@ -295,7 +295,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { SearchResult } from '@fdl/info/src/tv'
+import { SearchResult } from '@fdl/types'
 
 @Component
 export default class AddIndex extends Vue {

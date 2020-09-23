@@ -7,6 +7,7 @@ VOLUME ["/storage/downloads", "/storage/content"]
 
 ENV CONTENT_PATH /storage/content
 ENV DOWNLOAD_PATH /storage/downloads
+ENV TEMP_PATH /storage/downloads
 ENV DATABASE_LOCATION ${CONTENT_PATH}/database.sqlite
 ENV UNRAR_BIN /usr/bin/unrar
 ENV NUXT_HOST=0.0.0.0
@@ -26,14 +27,14 @@ COPY .deps .
 COPY yarn.lock .
 
 RUN yarn install --pure-lockfile
-
-COPY . .
-RUN ls -la
-
-
 RUN yarn global add ts-node
 
+COPY tsconfig.json .
+COPY packages/types packages/types
+COPY packages/frontend packages/frontend
 RUN cd packages/frontend && yarn build && yarn generate
+
+COPY . .
 
 RUN chmod +x scripts/start.sh
 

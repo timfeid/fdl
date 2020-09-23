@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {config} from '@fdl/config'
-import { InfoResponse } from '@fdl/types'
+import { SearchResult, InfoResponse } from '@fdl/types'
 
 const MOVIE_DB_KEY = config.env.MOVIE_DB_KEY
 
@@ -30,17 +30,7 @@ export type EpisodeResponse = {
   number: number
 }
 
-export type SearchResult = {
-  originalName: string
-  name: string
-  popularity: number
-  firstAirDate: string
-  id: number
-  posterPath: string
-  backdropPath: string
-  blurb: string
-  type: 'movie' | 'series'
-}
+
 
 export async function getMovieDbSeries(series: number, season?: number): Promise<any> {
   let url = `https://api.themoviedb.org/3/tv/${series}`

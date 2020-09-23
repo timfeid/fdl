@@ -1,5 +1,5 @@
 import { Validator, Driver } from './driver'
-import axios from 'axios'
+import axios, { AxiosResponse, CancelTokenSource } from 'axios'
 import fs from 'fs'
 import { EventEmitter } from 'events'
 import path from 'path'
@@ -9,6 +9,7 @@ import Multistream from 'multistream'
 import { config } from '@fdl/config'
 import { Download } from '../download'
 import md5 from 'md5'
+import { Stream } from 'stream'
 
 const TOTAL_PARTS = 8
 
@@ -35,16 +36,18 @@ class Part extends EventEmitter {
   parts: Parts
   partNumber: number
   totalBytes: number
-  stream: fs.WriteStream
   file: string
   downloaded = 0
+  lastReceivedData = 0
+  request: AxiosResponse<Stream>
+  cancelToken: CancelTokenSource
+  dataCheckTimeout: NodeJS.Timeout
   constructor (parts: Parts, partNumber: number, tempName: string) {
     super()
     this.parts = parts
     this.partNumber = partNumber
     this.totalBytes = Math.floor(parts.download.contentLength / TOTAL_PARTS)
     this.file = path.join(config.tempPath, `${tempName}.part.${this.partNumber+1}`)
-    this.stream = fs.createWriteStream(this.file)
   }
 
   get from () {
@@ -62,40 +65,67 @@ class Part extends EventEmitter {
   }
 
   error (e: Error) {
+    console.log(this)
     this.parts.download.emit('error', e)
   }
 
-  progress (chunk: string) {
+  progress (chunk: Buffer) {
+    this.lastReceivedData = Date.now()
     this.downloaded += chunk.length
     this.parts.download.progress(chunk.length)
   }
 
   completed () {
+    console.log('complete part', this.file)
+    clearTimeout(this.dataCheckTimeout)
     this.emit('completed')
+  }
+
+  async downloadRequest () {
+    const filesize = fs.existsSync(this.file) ? fs.statSync(this.file).size : 0
+    const from = this.from + filesize
+    console.log(this.file)
+    console.log('filesize', filesize)
+    console.log('original from', this.from)
+    console.log('new from', from)
+    this.cancelToken = axios.CancelToken.source()
+    return axios({
+      method: 'get',
+      cancelToken: this.cancelToken.token,
+      responseType: 'stream',
+      url: this.parts.download.finalUrl,
+      headers: {
+        Range: `bytes=${from}-${this.to}`
+      }
+    })
+  }
+
+  async pipeData () {
+    const stream = fs.createWriteStream(this.file, fs.existsSync(this.file) ? {flags: 'a'} : {})
+    this.request = await this.downloadRequest()
+    this.request.data.on('data', this.progress.bind(this))
+    this.request.data.on('end', this.completed.bind(this))
+    this.request.data.on('error', this.error.bind(this))
+    this.request.data.pipe(stream)
+  }
+
+  async dataCheck () {
+    // console.log(this.file, 'last retrieved shit', Date.now() - this.lastReceivedData)
+    if (Date.now() - this.lastReceivedData > 10000) {
+      console.log('looks like we might need a restart, let\'s do it.', this.file)
+      this.cancelToken.cancel('Restarting due to inactivity.')
+      this.pipeData()
+    }
+    this.dataCheckTimeout = setTimeout(this.dataCheck.bind(this), 10000)
   }
 
   async download () {
     try {
-      const response = await axios({
-        method: 'get',
-        responseType: 'stream',
-        url: this.parts.download.finalUrl,
-        headers: {
-          Range: `bytes=${this.from}-${this.to}`
-        }
-      })
-
-      return await new Promise((resolve, reject) => {
-        response.data.on('data', this.progress.bind(this))
-        response.data.on('end', () => {
-          this.completed()
-          resolve()
-        })
-        response.data.on('error', (err: Error) => {
-          this.error(err)
-          reject(err)
-        })
-        response.data.pipe(this.stream)
+      return await new Promise((resolve) => {
+        this.lastReceivedData = Date.now()
+        this.pipeData()
+        this.dataCheck()
+        this.on('completed', resolve)
       })
 
     } catch (e) {

@@ -88,3 +88,15 @@ export interface SystemInformation {
   network: si.Systeminformation.NetworkStatsData[],
   temp: si.Systeminformation.CpuTemperatureData,
 }
+
+export type SearchResult = {
+  originalName: string
+  name: string
+  popularity: number
+  firstAirDate: string
+  id: number
+  posterPath: string
+  backdropPath: string
+  blurb: string
+  type: 'movie' | 'series'
+}
