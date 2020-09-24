@@ -10,7 +10,7 @@ export function createSocket(store: Store<any>) {
   // })
 
   socket.on('download-progress', (download: DownloadBundle) => {
-    store.commit('downloads/update', download)
+    store.dispatch('downloads/update', download)
   })
 
   socket.on('download-queued', (download: DownloadBundle) => {

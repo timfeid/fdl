@@ -1,11 +1,11 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer
+      v-model="drawer"
       app
       clipped
       floating
       dark
-      v-model="drawer"
       :right="$vuetify.breakpoint.mobile"
     >
       <v-toolbar flat dark>
@@ -42,7 +42,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app dense flat dark v-if="$vuetify.breakpoint.mobile">
+    <v-app-bar v-if="$vuetify.breakpoint.mobile" app dense flat dark>
       <v-toolbar-title class="d-flex align-center">
         <img height="25" src="/logo.png" />
       </v-toolbar-title>
@@ -57,16 +57,27 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { DownloadBundle } from '@fdl/types'
+import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
+
+const downloads = namespace('downloads')
 
 @Component
 export default class App extends Vue {
-  @Prop({ type: String })
-  source!: string
+  @downloads.State recentlyCompleted!: null | DownloadBundle
 
-  drawer: any = null
-  items: any[] = []
-  items2: any[] = []
+  drawer: null | boolean = null
+
+  @Watch('recentlyCompleted')
+  emit() {
+    this.$toast(`${this.recentlyCompleted.title} has finished downloading`, {
+      color: 'blue darken-3',
+      classes: ['v-sheet', 'v-sheet--outlined'],
+      multiLine: true,
+      icon: 'mdi-download-circle',
+      timeout: 6000,
+    })
+  }
 }
 </script>
 

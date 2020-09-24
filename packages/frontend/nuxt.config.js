@@ -32,7 +32,7 @@ export default {
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: ['~/plugins/socket'],
+  plugins: ['~/plugins/socket', '~/plugins/toast'],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components

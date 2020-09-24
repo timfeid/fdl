@@ -44,8 +44,8 @@
 </template>
 
 <script lang="ts">
-import { DownloadBundle } from '@fdl/types'
-import { Component, Vue, Prop, Watch, Emit } from 'nuxt-property-decorator'
+import { DownloadBundle, Step } from '@fdl/types'
+import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 // @ts-ignore
 import VueFlip from 'vue-flip'
 import moment from 'moment'
@@ -88,13 +88,13 @@ export default class InfoIndex extends Vue {
 
   get color() {
     switch (this.download.step) {
-      case 'complete':
+      case Step.COMPLETE:
         return 'green'
-      case 'queue':
+      case Step.QUEUE:
         return 'blue lighten-3'
-      case 'extract':
+      case Step.EXTRACT:
         return 'orange'
-      case 'download':
+      case Step.DOWNLOAD:
         return 'blue lighten-3'
     }
 
@@ -107,11 +107,11 @@ export default class InfoIndex extends Vue {
 
   get progress() {
     switch (this.download.step) {
-      case 'complete':
+      case Step.COMPLETE:
         return 100
-      case 'extract':
+      case Step.EXTRACT:
         return this.download.extraction ? this.download.extraction.progress : 0
-      case 'download':
+      case Step.DOWNLOAD:
         return this.download.downloadProgress
       default:
         return 0

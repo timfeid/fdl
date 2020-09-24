@@ -274,22 +274,6 @@
         </v-stepper>
       </v-container>
     </v-layout>
-
-    <v-snackbar
-      :timeout="6000"
-      :value="showToast"
-      absolute
-      right
-      top
-      color="success"
-      dark
-      elevation="24"
-    >
-      <v-icon style="margin-top: -5px; margin-right: 0.5rem"
-        >mdi-check-bold</v-icon
-      >
-      Download was added successfully
-    </v-snackbar>
   </div>
 </template>
 
@@ -312,8 +296,6 @@ export default class AddIndex extends Vue {
   selectedSeason = 0
 
   selectedEpisode = 0
-
-  showToast = false
 
   results: SearchResult[] = []
 
@@ -468,15 +450,22 @@ export default class AddIndex extends Vue {
     this.error = {}
     try {
       await this.$axios.post('/downloads', this.downloadInfo)
+      this.$toast(`${this.downloadInfo.title} started downloading`, {
+        color: 'blue-grey',
+        classes: ['v-sheet', 'v-sheet--outlined'],
+        multiLine: true,
+        icon: 'mdi-plus-thick',
+        timeout: 6000,
+      })
       this.referrer = ''
       this.rawUrls = ''
       this.selectedSeason = 0
       this.selectedEpisode = 0
       this.selected = 0
       this.step = 0
-      this.showToast = true
       this.$router.replace('/')
     } catch (e) {
+      console.log(e)
       this.error = e.response.data
     }
   }
