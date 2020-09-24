@@ -1,49 +1,46 @@
 <template>
-  <VueFlip
-    :width="cardWidth.toString()"
-    :height="(cardHeight + 5).toString()"
-    :style="`width: ${cardWidth}px;height: ${(cardHeight + 5).toString()}px`"
-    active-click
-    @click.native="showInfoInConsole"
-  >
-    <template v-slot:front>
-      <v-card :height="cardHeight" :width="cardWidth">
-        <v-img
-          :src="download.poster"
-          :width="cardWidth"
-          :height="cardHeight"
-        ></v-img>
+  <div>
+    <VueFlip
+      :width="width.toString()"
+      :height="(height + 5).toString()"
+      :style="`width: ${width}px;height: ${(height + 5).toString()}px`"
+      active-click
+      @click.native="showInfoInConsole"
+    >
+      <template v-slot:front>
+        <v-card :height="height" :width="width">
+          <v-img :src="download.poster" :width="width" :height="height"></v-img>
 
-        <v-progress-linear
-          :indeterminate="indeterminate"
-          :value="progress"
-          :color="color"
-          height="5"
-        />
-      </v-card>
-    </template>
-    <template v-slot:back>
-      <v-card :height="cardHeight" :width="cardWidth">
-        <div
-          :style="`width: ${cardWidth}px; height: ${cardHeight}px`"
-          class="pa-3"
-        >
-          <div class="movie-title">
-            {{ download.title }}
+          <v-progress-linear
+            :indeterminate="indeterminate"
+            :value="progress"
+            :color="color"
+            height="5"
+          />
+        </v-card>
+      </template>
+      <template v-slot:back>
+        <v-card :height="height" :width="width">
+          <div :style="`width: ${width}px; height: ${height}px`" class="pa-3">
+            <div class="movie-title">
+              {{ download.title }}
+            </div>
+            <div class="movie-year">{{ download.year }}</div>
+            <div class="movie-added-date">{{ timeago }}</div>
           </div>
-          <div class="movie-year">{{ download.year }}</div>
-          <div class="movie-added-date">2 days ago</div>
-        </div>
 
-        <v-progress-linear
-          :indeterminate="indeterminate"
-          :value="progress"
-          :color="color"
-          height="5"
-        />
-      </v-card>
-    </template>
-  </VueFlip>
+          <v-progress-linear
+            :indeterminate="indeterminate"
+            :value="progress"
+            :color="color"
+            height="5"
+          />
+        </v-card>
+      </template>
+    </VueFlip>
+    <div class="download-title" v-text="download.title" />
+    <div class="download-subtitle" v-text="subtitle" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -51,6 +48,7 @@ import { DownloadBundle } from '@fdl/types'
 import { Component, Vue, Prop, Watch, Emit } from 'nuxt-property-decorator'
 // @ts-ignore
 import VueFlip from 'vue-flip'
+import moment from 'moment'
 
 @Component({
   components: {
@@ -61,22 +59,31 @@ export default class InfoIndex extends Vue {
   @Prop({ type: Object, required: true })
   download!: DownloadBundle
 
-  mounted() {
-    this.height(this.cardHeight)
+  @Prop({ type: Number, required: false, default: 150 })
+  width!: number
+
+  get subtitle() {
+    let str = ''
+    if (this.download.type.name === 'series') {
+      str +=
+        (this.$vuetify.breakpoint.mobile ? 'S' : 'Season ') +
+        this.download.season.toString().padStart(2, '0')
+      if (this.download.episode) {
+        str +=
+          (this.$vuetify.breakpoint.mobile ? 'E' : ', Episode ') +
+          this.download.episode.toString().padStart(2, '0')
+      }
+    }
+
+    return str || this.download.year
   }
 
-  get cardWidth() {
-    return this.$vuetify.breakpoint.mobile ? 100 : 150
+  get height() {
+    return this.width * 1.53
   }
 
-  get cardHeight() {
-    return this.$vuetify.breakpoint.mobile ? 153 : 230
-  }
-
-  @Watch('cardHeight')
-  @Emit('height')
-  height(cardHeight: number) {
-    return cardHeight
+  get timeago() {
+    return moment((this.download as any).createdAt).fromNow()
   }
 
   get color() {
@@ -116,3 +123,24 @@ export default class InfoIndex extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+.download {
+  &-title,
+  &-subtitle {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &-title {
+    color: #436565;
+    margin-top: 0.5rem;
+    line-height: 1.2rem;
+    font-size: 1rem;
+  }
+  &-subtitle {
+    font-weight: 300;
+    color: lighten(#436565, 5%);
+  }
+}
+</style>

@@ -79,4 +79,7 @@ export default class App extends Vue {
     // background-color: #393D40;
   }
 }
+.v-toolbar__title {
+  font-weight: 200;
+}
 </style>

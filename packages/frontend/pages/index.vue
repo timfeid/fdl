@@ -10,12 +10,13 @@
       <v-container class="fill-height" fluid>
         <div style="display: block; width: 100%">
           <div
-            :style="`display: grid; grid-template-columns: repeat(auto-fill, minmax(${width}px, 1fr)); grid-row-gap: 15px; grid-column-gap: 15px`"
+            :style="`display: grid; grid-template-columns: repeat(auto-fill, minmax(${width}px, 1fr)); grid-row-gap: 24px; grid-column-gap: 24px`"
           >
             <DownloadCard
               v-for="download in downloads"
               :key="download.id"
               :download="download"
+              :width="width"
             />
           </div>
         </div>
@@ -39,7 +40,15 @@ export default class Index extends Vue {
   }
 
   get width() {
-    return this.$vuetify.breakpoint.mobile ? 100 : 150
+    if (this.$vuetify.breakpoint.smAndDown) {
+      return 100
+    }
+
+    if (this.$vuetify.breakpoint.lgAndDown) {
+      return 150
+    }
+
+    return 195
   }
 }
 </script>
