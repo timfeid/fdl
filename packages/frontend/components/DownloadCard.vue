@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import { DownloadBundle } from '@fdl/types'
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Watch, Emit } from 'nuxt-property-decorator'
 // @ts-ignore
 import VueFlip from 'vue-flip'
 
@@ -61,8 +61,23 @@ export default class InfoIndex extends Vue {
   @Prop({ type: Object, required: true })
   download!: DownloadBundle
 
-  cardWidth = 150
-  cardHeight = 230
+  mounted() {
+    this.height(this.cardHeight)
+  }
+
+  get cardWidth() {
+    return this.$vuetify.breakpoint.mobile ? 100 : 150
+  }
+
+  get cardHeight() {
+    return this.$vuetify.breakpoint.mobile ? 153 : 230
+  }
+
+  @Watch('cardHeight')
+  @Emit('height')
+  height(cardHeight: number) {
+    return cardHeight
+  }
 
   get color() {
     switch (this.download.step) {

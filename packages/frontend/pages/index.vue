@@ -12,9 +12,12 @@
           <template v-for="download in downloads">
             <div
               :key="download.id"
-              style="margin: 0 2rem 2rem 0px; max-width: 150px; height: 230px"
+              :style="`margin: 0 2rem 2rem 0px; max-width: 150px; height: ${height}px`"
             >
-              <DownloadCard :download="download" />
+              <DownloadCard
+                :download="download"
+                @height="newHeight"
+              />
             </div>
           </template>
         </div>
@@ -32,6 +35,11 @@ const downloads = namespace('downloads')
 @Component
 export default class Index extends Vue {
   @downloads.State downloads!: DownloadBundle[]
+  height = 200
+  newHeight (height: number) {
+    console.log(height)
+    this.height = height
+  }
 }
 </script>
 

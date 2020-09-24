@@ -1,6 +1,13 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer permanent app clipped floating dark>
+    <v-navigation-drawer
+      app
+      clipped
+      floating
+      dark
+      v-model="drawer"
+      :right="$vuetify.breakpoint.mobile"
+    >
       <v-toolbar flat dark>
         <v-toolbar-title class="d-flex align-center">
           <img height="25" src="/logo.png" />
@@ -34,6 +41,14 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+
+    <v-app-bar app dense flat dark v-if="$vuetify.breakpoint.mobile">
+      <v-toolbar-title class="d-flex align-center">
+        <img height="25" src="/logo.png" />
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+    </v-app-bar>
 
     <v-main>
       <nuxt />
