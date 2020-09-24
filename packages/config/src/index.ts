@@ -36,3 +36,5 @@ const setupConfig = (): Config => {
 }
 
 export const config = setupConfig()
+
+export {getOption, saveOption} from './option'

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
+
   "scripts": {
+    "test": "NODE_ENV=test ts-mocha --file __tests__/setup.ts --paths '__tests__/*.test.ts' --exit",
     "lint": "eslint ."
   },
   "devDependencies": {

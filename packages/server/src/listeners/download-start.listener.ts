@@ -2,6 +2,8 @@ import {findExtractor, Extractor} from '@fdl/extraction'
 import { DownloadInfo, DownloadBundle, Step } from '@fdl/types'
 import Koa from 'koa'
 import {Manager, Download} from '@fdl/downloader'
+import { getOption } from '@fdl/config'
+import fs from 'fs'
 
 const manager = new Manager(8)
 
@@ -32,6 +34,12 @@ function getProgress(bundle: DownloadBundle) {
   }
 
   return bundle.step
+}
+
+function deleteFiles (downloads: Download[]) {
+  for (const download of downloads) {
+    fs.unlinkSync(download.filepath)
+  }
 }
 
 export default async function downloadListener(app: Koa, info: DownloadInfo) {
@@ -72,6 +80,9 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
   extractor.on('complete', () => app.emit('update-progress', convertToObject(info, downloads, extractor)))
   await extractor.extract(downloads)
 
+  if (await getOption('deleteAfterDownload')) {
+    deleteFiles(downloads)
+  }
 
   app.emit('download-complete', extractor)
 }

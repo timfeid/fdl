@@ -17,3 +17,4 @@ export async function createConnection () {
 export { Download } from './entities/download.entity'
 export { Type } from './entities/type.entity'
 export { Url } from './entities/url.entity'
+export { Option } from './entities/option.entity'
