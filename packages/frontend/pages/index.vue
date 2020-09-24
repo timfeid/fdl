@@ -7,19 +7,17 @@
       </v-toolbar-title>
     </v-toolbar>
     <v-layout class="align-baseline ma-3">
-      <v-container class="fill-height flex-column align-start" fluid>
-        <div class="d-flex flex-wrap">
-          <template v-for="download in downloads">
-            <div
+      <v-container class="fill-height" fluid>
+        <div style="display: block; width: 100%">
+          <div
+            :style="`display: grid; grid-template-columns: repeat(auto-fill, minmax(${width}px, 1fr)); grid-row-gap: 15px; grid-column-gap: 15px`"
+          >
+            <DownloadCard
+              v-for="download in downloads"
               :key="download.id"
-              :style="`margin: 0 2rem 2rem 0px; max-width: 150px; height: ${height}px`"
-            >
-              <DownloadCard
-                :download="download"
-                @height="newHeight"
-              />
-            </div>
-          </template>
+              :download="download"
+            />
+          </div>
         </div>
       </v-container>
     </v-layout>
@@ -35,10 +33,13 @@ const downloads = namespace('downloads')
 @Component
 export default class Index extends Vue {
   @downloads.State downloads!: DownloadBundle[]
-  height = 200
-  newHeight (height: number) {
-    console.log(height)
-    this.height = height
+
+  get marginSize() {
+    return this.$vuetify.breakpoint.mobile ? 0.5 : 1
+  }
+
+  get width() {
+    return this.$vuetify.breakpoint.mobile ? 100 : 150
   }
 }
 </script>

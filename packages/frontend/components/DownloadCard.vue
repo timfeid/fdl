@@ -2,7 +2,7 @@
   <VueFlip
     :width="cardWidth.toString()"
     :height="(cardHeight + 5).toString()"
-    :style="`width: ${cardWidth}px;`"
+    :style="`width: ${cardWidth}px;height: ${(cardHeight + 5).toString()}px`"
     active-click
     @click.native="showInfoInConsole"
   >
@@ -103,7 +103,7 @@ export default class InfoIndex extends Vue {
       case 'complete':
         return 100
       case 'extract':
-        return this.download.extraction.progress
+        return this.download.extraction ? this.download.extraction.progress : 0
       case 'download':
         return this.download.downloadProgress
       default:
