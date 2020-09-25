@@ -7,9 +7,11 @@ import { Driver } from './drivers/driver'
 import path from 'path'
 import { config } from '@fdl/config'
 import {DownloadObject} from '@fdl/types'
-
+import {logger} from '@fdl/logger'
 
 export class Download extends EventEmitter {
+  readonly MAX_RETRIES = 3
+  readonly RETRY_DELAY = 30
   private url: string
   private _finalUrl?: string
   private site: Site
@@ -20,6 +22,7 @@ export class Download extends EventEmitter {
   private _downloaded = 0
   private basepath = config.downloadPath
   private previousTotal = 0
+  private retryCount = 0
 
   public get originalUrl () {
     return this.url
@@ -57,6 +60,9 @@ export class Download extends EventEmitter {
 
   async start () {
     this._started = true
+    if (this.retryCount > 0) {
+      logger.info(`Retry #${this.retryCount}`)
+    }
     try {
       this._finalUrl = await this.site.transformUrl(this.url)
       const response = await this.getHeaders()
@@ -66,10 +72,16 @@ export class Download extends EventEmitter {
       this.driver = matchDriver(this, response)
       this.emit('started', this)
       await this.driver.start()
-      console.log('complete emitted for', this.toObject)
       this.emit('complete', this)
     } catch (e) {
-      this.emit('error', e)
+      if (++this.retryCount === this.MAX_RETRIES) {
+        this.emit('error', e)
+      } else {
+        logger.error(e)
+        logger.info('Restarting in', this.RETRY_DELAY, 'seconds')
+
+        setTimeout(() => this.start(), this.RETRY_DELAY * 1000)
+      }
     }
   }
 

@@ -2,6 +2,7 @@ import { Site } from './site'
 import { config } from '@fdl/config'
 import axios from 'axios'
 import qs from 'querystring'
+import {logger} from '@fdl/logger'
 
 type SID = {
   last_retrieved: number
@@ -14,17 +15,12 @@ export default class Rapidgator extends Site {
   sid?: SID
   username: string
   password: string
+  authenticatingRequest?: Promise<SID>
 
   constructor () {
     super()
     this.username = config.env.RAPIDGATOR_USERNAME || ''
     this.password = config.env.RAPIDGATOR_PASSWORD || ''
-    this.keepAuthenticated()
-  }
-
-  async keepAuthenticated () {
-    await this.authenticate()
-    setTimeout(this.keepAuthenticated.bind(this), 3600000)
   }
 
   match (url: string) {
@@ -32,9 +28,15 @@ export default class Rapidgator extends Site {
   }
 
   async authenticate () {
-    if (!!this.username && !!this.password && await this.needsAuthentication()) {
-      await this.getSid()
+    if (!this.authenticatingRequest && !!this.username && !!this.password && await this.needsAuthentication()) {
+      this.authenticatingRequest = this.getSid()
     }
+
+    if (this.authenticatingRequest) {
+      await this.authenticatingRequest
+    }
+
+    this.authenticatingRequest = undefined
   }
 
   async needsAuthentication () {
@@ -59,7 +61,11 @@ export default class Rapidgator extends Site {
         last_retrieved: Date.now(),
       }
     } catch (e) {
-      console.error(e)
+      logger.error(e)
+      if (e.response) {
+        logger.debug(`Status code: ${e.response.status}`)
+        logger.debug(e.response.data)
+      }
     }
 
     return this.sid
@@ -79,13 +85,13 @@ export default class Rapidgator extends Site {
 
       return response.data.response.url
     } catch (e) {
-      console.log('Unable to transform URL:', e.response.status)
-      console.log(e.response.data)
+      logger.error(`Unable to transform URL: ${e.response.status}`)
+      logger.error(e.response.data)
       if (e.response.status === 401 && retrying === false) {
         this.sid = undefined
         return await this.transformUrl(url, true)
       }
-      console.log('Retry failed!')
+      logger.error('Retry failed!')
       return url
     }
   }

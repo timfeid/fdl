@@ -2,6 +2,7 @@ import { Validator, Extractor } from './extractor'
 import {Download} from '@fdl/downloader'
 import {spawn} from 'child_process'
 import {config} from '@fdl/config'
+import { logger } from '@fdl/logger'
 
 
 export default class RarExtractor extends Extractor {
@@ -13,12 +14,19 @@ export default class RarExtractor extends Extractor {
 
     await new Promise(resolve => {
       const extraction = spawn(config.unrarBin, ['e', '-y', rarFile.filepath, this.finalpath])
-      extraction.stdout.on('data', (d: Buffer) => {
-        const match = d.toString().match(/\d+%/g)
+      extraction.stdout.on('data', (buffer: Buffer) => {
+        const data = buffer.toString()
+        const match = data.match(/\d+%/g)
         const progress = match ? parseInt(match[0], 10) : 0
         if (progress > 0) {
           this.setProgress(progress)
         }
+        logger.verbose(data)
+      })
+
+      extraction.stderr.on('data', (buffer: Buffer) => {
+        const data = buffer.toString()
+        logger.error(`Extraction error: ${data}`)
       })
 
       extraction.on('exit', () => {

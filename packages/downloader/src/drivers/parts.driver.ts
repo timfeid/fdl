@@ -10,6 +10,7 @@ import { config } from '@fdl/config'
 import { Download } from '../download'
 import md5 from 'md5'
 import { Stream } from 'stream'
+import { logger } from '@fdl/logger'
 
 const TOTAL_PARTS = 8
 
@@ -65,7 +66,8 @@ class Part extends EventEmitter {
   }
 
   error (e: Error) {
-    console.log(this)
+    logger.error(e)
+    logger.debug(this)
     this.parts.download.emit('error', e)
   }
 
@@ -76,7 +78,7 @@ class Part extends EventEmitter {
   }
 
   completed () {
-    console.log('complete part', this.file)
+    logger.verbose(`Completed part ${this.file}`)
     clearTimeout(this.dataCheckTimeout)
     this.emit('completed')
   }
@@ -84,10 +86,10 @@ class Part extends EventEmitter {
   async downloadRequest () {
     const filesize = fs.existsSync(this.file) ? fs.statSync(this.file).size : 0
     const from = this.from + filesize
-    console.log(this.file)
-    console.log('filesize', filesize)
-    console.log('original from', this.from)
-    console.log('new from', from)
+    if (from !== this.from) {
+      logger.debug('Starting from filesize')
+      logger.debug(this)
+    }
     this.cancelToken = axios.CancelToken.source()
     return axios({
       method: 'get',
@@ -110,9 +112,8 @@ class Part extends EventEmitter {
   }
 
   async dataCheck () {
-    // console.log(this.file, 'last retrieved shit', Date.now() - this.lastReceivedData)
     if (Date.now() - this.lastReceivedData > 10000) {
-      console.log('looks like we might need a restart, let\'s do it.', this.file)
+      logger.debug(`${this.file} may have stalled, restarting.`)
       this.cancelToken.cancel('Restarting due to inactivity.')
       this.pipeData()
     }
@@ -130,7 +131,7 @@ class Part extends EventEmitter {
 
     } catch (e) {
       this.error(e)
-      console.error(e)
+      logger.error(e)
     }
   }
 }

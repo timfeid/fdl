@@ -7,6 +7,7 @@ import { SystemInformation, DownloadBundle, DiskInfo } from '@fdl/types'
 import df from 'node-df'
 import si from 'systeminformation'
 import { config } from '@fdl/config'
+import { logger } from '../../logger/src'
 
 const infos: SystemInformation[] = []
 
@@ -72,8 +73,7 @@ export function createSocketIo (server: Server, app: Koa) {
   const io = socketIO(server)
 
   io.on('connection', socket => {
-    // console.log(socket)
-    console.log('a socket has connected.')
+    logger.verbose('a socket has connected.')
   })
 
   app.on('download-queued', (download: DownloadBundle) => {

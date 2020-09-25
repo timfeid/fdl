@@ -4,6 +4,7 @@ import Koa from 'koa'
 import {Manager, Download} from '@fdl/downloader'
 import { getOption } from '@fdl/config'
 import fs from 'fs'
+import {logger} from '@fdl/logger'
 
 const manager = new Manager(8)
 
@@ -36,9 +37,14 @@ function getProgress(bundle: DownloadBundle) {
   return bundle.step
 }
 
-function deleteFiles (downloads: Download[]) {
+function deleteFiles (downloads: Download[], app: Koa) {
   for (const download of downloads) {
-    fs.unlinkSync(download.filepath)
+    try {
+      fs.unlinkSync(download.filepath)
+    } catch (e) {
+      app.emit('error', e)
+      logger.debug(download)
+    }
   }
 }
 
@@ -66,10 +72,8 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
   manager.startNextDownload()
 
   await Promise.all(downloads.map(async (download) => {
-    console.log('waiting on', download.originalUrl)
     return new Promise(resolve => {
       download.on('complete', () => {
-        console.log('complete!', download.originalUrl)
         resolve(download)
       })
     })
@@ -81,7 +85,7 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
   await extractor.extract(downloads)
 
   if (await getOption('deleteAfterDownload')) {
-    deleteFiles(downloads)
+    deleteFiles(downloads, app)
   }
 
   app.emit('download-complete', extractor)
