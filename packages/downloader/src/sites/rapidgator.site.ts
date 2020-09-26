@@ -57,6 +57,7 @@ export default class Rapidgator extends Site {
       })
 
       const response = await this.authenticatingRequest
+      this.authenticatingRequest = undefined
       this.sid = {
         ...response.data.response,
         last_retrieved: Date.now(),
