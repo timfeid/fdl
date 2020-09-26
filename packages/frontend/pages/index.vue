@@ -10,7 +10,7 @@
       <v-container class="fill-height" fluid>
         <div style="display: block; width: 100%">
           <div
-            :style="`display: grid; grid-template-columns: repeat(auto-fill, minmax(${width}px, 1fr)); grid-row-gap: 24px; grid-column-gap: 24px`"
+            :style="`display: grid; grid-template-columns: repeat(auto-fill, minmax(${width}px, 1fr)); grid-row-gap: 24px; grid-column-gap: ${gap}px`"
           >
             <DownloadCard
               v-for="download in downloads"
@@ -35,20 +35,28 @@ const downloads = namespace('downloads')
 export default class Index extends Vue {
   @downloads.State downloads!: DownloadBundle[]
 
-  get marginSize() {
-    return this.$vuetify.breakpoint.mobile ? 0.5 : 1
-  }
-
   get width() {
-    if (this.$vuetify.breakpoint.smAndDown) {
-      return 100
+    if (this.$vuetify.breakpoint.xs) {
+      return 90
+    }
+
+    if (this.$vuetify.breakpoint.mdAndDown) {
+      return 125
     }
 
     if (this.$vuetify.breakpoint.lgAndDown) {
       return 150
     }
 
-    return 195
+    return 175
+  }
+
+  get gap() {
+    if (this.$vuetify.breakpoint.smAndDown) {
+      return 5
+    }
+
+    return 24
   }
 }
 </script>

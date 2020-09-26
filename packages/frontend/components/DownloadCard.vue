@@ -38,14 +38,22 @@
         </v-card>
       </template>
     </VueFlip>
-    <div class="download-title" v-text="download.title" />
-    <div class="download-subtitle" v-text="subtitle" />
+    <div
+      class="download-title"
+      :style="`width: ${width}px`"
+      v-text="download.title"
+    />
+    <div
+      class="download-subtitle"
+      :style="`width: ${width}px`"
+      v-text="subtitle"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { DownloadBundle, Step } from '@fdl/types'
-import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 // @ts-ignore
 import VueFlip from 'vue-flip'
 import moment from 'moment'
