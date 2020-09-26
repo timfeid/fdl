@@ -1,6 +1,6 @@
 import { Site } from './site'
 import { config } from '@fdl/config'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import qs from 'querystring'
 import {logger} from '@fdl/logger'
 
@@ -12,10 +12,12 @@ type SID = {
 }
 
 export default class Rapidgator extends Site {
+  readonly MAX_RETRIES = 3
+  readonly RETRY_DELAY = 45
   sid?: SID
   username: string
   password: string
-  authenticatingRequest?: Promise<SID>
+  authenticatingRequest?: Promise<AxiosResponse>
 
   constructor () {
     super()
@@ -28,15 +30,9 @@ export default class Rapidgator extends Site {
   }
 
   async authenticate () {
-    if (!this.authenticatingRequest && !!this.username && !!this.password && await this.needsAuthentication()) {
-      this.authenticatingRequest = this.getSid()
+    if (!!this.username && !!this.password && this.needsAuthentication()) {
+      await this.getSid()
     }
-
-    if (this.authenticatingRequest) {
-      await this.authenticatingRequest
-    }
-
-    this.authenticatingRequest = undefined
   }
 
   async needsAuthentication () {
@@ -47,15 +43,20 @@ export default class Rapidgator extends Site {
 
   async getSid() {
     try {
+      if (this.authenticatingRequest) {
+        return new Promise(resolve => this.authenticatingRequest.then(resolve))
+      }
+
       const query = qs.stringify({
         username: this.username,
         password: this.password,
       })
 
-      const response = await axios({
+      this.authenticatingRequest = axios({
         url: `https://rapidgator.net/api/user/login?${query}`,
       })
 
+      const response = await this.authenticatingRequest
       this.sid = {
         ...response.data.response,
         last_retrieved: Date.now(),
@@ -64,15 +65,15 @@ export default class Rapidgator extends Site {
       logger.error(e)
       if (e.response) {
         logger.debug(`Status code: ${e.response.status}`)
-        logger.debug(e.response.data)
+        console.log(e.response.data)
       }
     }
 
     return this.sid
   }
 
-  async transformUrl (url: string, retrying = false): Promise<string> {
-    if (await this.needsAuthentication()) {
+  async transformUrl (url: string, retryCount = 0): Promise<string> {
+    if (this.needsAuthentication()) {
       await this.authenticate()
     }
 
@@ -86,10 +87,12 @@ export default class Rapidgator extends Site {
       return response.data.response.url
     } catch (e) {
       logger.error(`Unable to transform URL: ${e.response.status}`)
-      logger.error(e.response.data)
-      if (e.response.status === 401 && retrying === false) {
+      console.log(e.response.data)
+      if (e.response.status === 401 && retryCount++ !== this.MAX_RETRIES) {
         this.sid = undefined
-        return await this.transformUrl(url, true)
+        logger.debug(`Retry #${retryCount}`)
+        await new Promise(resolve => setTimeout(resolve, this.RETRY_DELAY * 1000))
+        return await this.transformUrl(url, retryCount)
       }
       logger.error('Retry failed!')
       return url

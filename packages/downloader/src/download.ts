@@ -8,6 +8,7 @@ import path from 'path'
 import { config } from '@fdl/config'
 import {DownloadObject} from '@fdl/types'
 import {logger} from '@fdl/logger'
+import fs from 'fs'
 
 export class Download extends EventEmitter {
   readonly MAX_RETRIES = 3
@@ -69,12 +70,17 @@ export class Download extends EventEmitter {
 
       this._filepath = this.determineFilepath(this.determineFilename(response.headers))
       this._contentLength = parseInt(response.headers['content-length'], 10)
-      this.driver = matchDriver(this, response)
+      const filesize = fs.existsSync(this._filepath) ? fs.statSync(this._filepath).size : 0
       this.emit('started', this)
-      await this.driver.start()
+      if (filesize !== this._contentLength) {
+        this.driver = matchDriver(this, response)
+        await this.driver.start()
+      } else {
+        this.progress(filesize)
+      }
       this.emit('complete', this)
     } catch (e) {
-      if (++this.retryCount === this.MAX_RETRIES) {
+      if (this.retryCount++ === this.MAX_RETRIES) {
         this.emit('error', e)
       } else {
         logger.error(e)

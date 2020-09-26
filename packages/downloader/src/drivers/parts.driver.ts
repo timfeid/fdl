@@ -71,10 +71,11 @@ class Part extends EventEmitter {
     this.parts.download.emit('error', e)
   }
 
-  progress (chunk: Buffer) {
-    this.lastReceivedData = Date.now()
-    this.downloaded += chunk.length
-    this.parts.download.progress(chunk.length)
+  progress (chunk: Buffer | number) {
+    const totalProgress = typeof chunk === 'number' ? chunk : chunk.length
+    this.gotData()
+    this.downloaded += totalProgress
+    this.parts.download.progress(totalProgress)
   }
 
   completed () {
@@ -83,13 +84,11 @@ class Part extends EventEmitter {
     this.emit('completed')
   }
 
-  async downloadRequest () {
-    const filesize = fs.existsSync(this.file) ? fs.statSync(this.file).size : 0
-    const from = this.from + filesize
-    if (from !== this.from) {
-      logger.debug('Starting from filesize')
-      logger.debug(this)
-    }
+  gotData () {
+    this.lastReceivedData = Date.now()
+  }
+
+  async downloadRequest (from: number) {
     this.cancelToken = axios.CancelToken.source()
     return axios({
       method: 'get',
@@ -104,11 +103,18 @@ class Part extends EventEmitter {
 
   async pipeData () {
     const stream = fs.createWriteStream(this.file, fs.existsSync(this.file) ? {flags: 'a'} : {})
-    this.request = await this.downloadRequest()
-    this.request.data.on('data', this.progress.bind(this))
-    this.request.data.on('end', this.completed.bind(this))
-    this.request.data.on('error', this.error.bind(this))
-    this.request.data.pipe(stream)
+    const filesize = fs.existsSync(this.file) ? fs.statSync(this.file).size : 0
+    const from = this.from + filesize
+    if (from < this.to) {
+      this.request = await this.downloadRequest(from)
+      this.request.data.on('data', this.progress.bind(this))
+      this.request.data.on('end', this.completed.bind(this))
+      this.request.data.on('error', this.error.bind(this))
+      this.request.data.pipe(stream)
+    } else {
+      this.progress(filesize)
+      this.completed()
+    }
   }
 
   async dataCheck () {
@@ -123,10 +129,10 @@ class Part extends EventEmitter {
   async download () {
     try {
       return await new Promise((resolve) => {
-        this.lastReceivedData = Date.now()
-        this.pipeData()
-        this.dataCheck()
         this.on('completed', resolve)
+        this.gotData()
+        this.dataCheck()
+        this.pipeData()
       })
 
     } catch (e) {

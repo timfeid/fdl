@@ -55,6 +55,7 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
   app.emit('download-queued', convertToObject(info, downloads))
 
   for (const download of downloads) {
+    console.log(download.originalUrl)
     download.on('error', (err) => {
       app.emit('error', err)
     })
@@ -74,6 +75,8 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
   await Promise.all(downloads.map(async (download) => {
     return new Promise(resolve => {
       download.on('complete', () => {
+        console.log('complete', download.filepath)
+        app.emit('update-progress', convertToObject(info, downloads))
         resolve(download)
       })
     })
