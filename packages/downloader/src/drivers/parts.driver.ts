@@ -51,20 +51,28 @@ class DownloadPart extends EventEmitter {
 
   async download () {
     this.refreshFilesize()
-    if (this.filesize === this.part.contentLength) {
+
+    if (this.filesize + this.part.from >= this.part.to) {
+      console.log('this part is completed already')
       return this.completed()
     }
+
     if (this.filesize > 0) {
       logger.debug('we are continuing a download')
     }
-    this.cancelToken = axios.CancelToken.source()
-    this.request = await this.createRequest(this.part.from + this.filesize)
-    this.createPipe()
-    this.livenessCheck()
+
+    try {
+      this.cancelToken = axios.CancelToken.source()
+      this.request = await this.createRequest(this.part.from + this.filesize)
+      this.createPipe()
+      this.livenessCheck()
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   createRequest (from: number): Promise<AxiosResponse<Stream>> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       axios({
         method: 'get',
         cancelToken: this.cancelToken.token,
@@ -73,7 +81,7 @@ class DownloadPart extends EventEmitter {
         headers: {
           Range: `bytes=${from}-${this.part.to}`
         }
-      }).then(resolve).catch(() => setTimeout(() => resolve(this.createRequest(from)), 1000))
+      }).then(resolve).catch(reject)
     })
   }
 
@@ -187,8 +195,8 @@ export default class Parts extends Driver {
 
     // await this.parts[0].download()
     await Promise.all(this.parts.map(part => new Promise(resolve => {
-      part.download()
       part.on('complete', resolve)
+      part.download()
     })))
     await this.joinParts()
     await this.destroyParts()
