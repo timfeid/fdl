@@ -59,6 +59,11 @@ export class Download extends EventEmitter {
     this.site = matchSite(url)
   }
 
+  complete () {
+    logger.verbose(`Completed download ${this.filepath}`)
+    this.emit('complete')
+  }
+
   async start () {
     this._started = true
     if (this.retryCount > 0) {
@@ -72,13 +77,12 @@ export class Download extends EventEmitter {
       this._contentLength = parseInt(response.headers['content-length'], 10)
       const filesize = fs.existsSync(this._filepath) ? fs.statSync(this._filepath).size : 0
       this.emit('started', this)
+      this.progress(filesize)
       if (filesize !== this._contentLength) {
         this.driver = matchDriver(this, response)
         await this.driver.start()
-      } else {
-        this.progress(filesize)
       }
-      this.emit('complete', this)
+      this.complete()
     } catch (e) {
       if (this.retryCount++ === this.MAX_RETRIES) {
         this.emit('error', e)
@@ -128,6 +132,7 @@ export class Download extends EventEmitter {
   }
 
   private async getHeaders () {
+    logger.verbose(`Getting headers for ${this.originalUrl}`)
     return await axios({
       method: 'head',
       url: this.finalUrl,
@@ -144,6 +149,7 @@ export class Download extends EventEmitter {
       downloaded: this.downloaded,
       totalProgress: this.totalProgress,
       originalUrl: this.originalUrl,
+      driver: this.driver ? this.driver.toObject() : undefined,
     }
   }
 }

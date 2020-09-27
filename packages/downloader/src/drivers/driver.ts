@@ -9,6 +9,10 @@ export abstract class Driver {
   }
 
   abstract async start (): Promise<void>
+
+  toObject () {
+    return {}
+  }
 }
 
 export type Validator = (headersResponse: AxiosResponse) => boolean

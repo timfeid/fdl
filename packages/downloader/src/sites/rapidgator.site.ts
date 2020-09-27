@@ -52,6 +52,7 @@ export default class Rapidgator extends Site {
         password: this.password,
       })
 
+      logger.verbose('Requesting rapidgator session')
       this.authenticatingRequest = axios({
         url: `https://rapidgator.net/api/user/login?${query}`,
       })
@@ -83,6 +84,7 @@ export default class Rapidgator extends Site {
         sid: this.sid?.session_id,
         url,
       })
+      logger.verbose(`Transforming url for ${url}`)
       const response = await axios(`https://rapidgator.net/api/file/download?${query}`)
 
       return response.data.response.url

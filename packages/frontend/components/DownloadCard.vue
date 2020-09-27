@@ -27,6 +27,19 @@
             </div>
             <div class="movie-year">{{ download.year }}</div>
             <div class="movie-added-date">{{ timeago }}</div>
+            <div v-if="download.downloads" class="mt-3">
+              <div
+                v-for="(dl, i) in download.downloads"
+                :key="i"
+                style="height: 10px"
+              >
+                <v-progress-linear
+                  :value="dl.totalProgress"
+                  color="blue lighten-3"
+                  height="5"
+                />
+              </div>
+            </div>
           </div>
 
           <v-progress-linear

@@ -7,6 +7,7 @@ export type DownloadObject = {
   downloaded: number
   totalProgress: number
   originalUrl: string
+  driver: Record<string, any>,
 }
 
 export enum Step {

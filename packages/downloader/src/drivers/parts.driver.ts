@@ -1,5 +1,5 @@
 import { Validator, Driver } from './driver'
-import axios, { AxiosResponse, CancelTokenSource } from 'axios'
+import axios, { AxiosPromise, AxiosResponse, CancelTokenSource } from 'axios'
 import fs from 'fs'
 import { EventEmitter } from 'events'
 import path from 'path'
@@ -33,112 +33,139 @@ function mergeFiles(readFiles: string[], writeFile: string): Promise<boolean> {
   })
 }
 
-class Part extends EventEmitter {
-  parts: Parts
-  partNumber: number
-  totalBytes: number
-  file: string
-  downloaded = 0
-  lastReceivedData = 0
+class DownloadPart extends EventEmitter {
+  part: Part
   request: AxiosResponse<Stream>
   cancelToken: CancelTokenSource
-  dataCheckTimeout: NodeJS.Timeout
-  constructor (parts: Parts, partNumber: number, tempName: string) {
+  filesize = 0
+  lastReceivedData = Date.now()
+  livenessCheckTimeout: NodeJS.Timeout
+  constructor (part: Part) {
     super()
-    this.parts = parts
-    this.partNumber = partNumber
-    this.totalBytes = Math.floor(parts.download.contentLength / TOTAL_PARTS)
-    this.file = path.join(config.tempPath, `${tempName}.part.${this.partNumber+1}`)
+    this.part = part
   }
 
-  get from () {
-    // part number 0 = 0 * 50 = 0
-    // part number 1 = 1 * 50 + 1 = 51
-    // part number 2 = 2 * 50 + 1= 101
-    return this.partNumber ? (this.partNumber * this.totalBytes) + 1 : 0
+  refreshFilesize () {
+    this.filesize = fs.existsSync(this.part.file) ? fs.statSync(this.part.file).size : 0
   }
 
-  get to () {
-    // part number 0 = (0+1) * 50 = 50
-    // part number 1 = (1+1) * 50 = 100
-    // part number 2 = (2+1) * 50 = 150
-    return this.partNumber === TOTAL_PARTS-1 ? this.parts.download.contentLength : (this.partNumber+1) * this.totalBytes
+  async download () {
+    this.refreshFilesize()
+    if (this.filesize === this.part.contentLength) {
+      return this.completed()
+    }
+    this.cancelToken = axios.CancelToken.source()
+    this.request = await this.createRequest(this.part.from + this.filesize)
+    this.createPipe()
+    this.livenessCheck()
   }
 
-  error (e: Error) {
-    logger.error(e)
-    logger.debug(this)
-    this.parts.download.emit('error', e)
+  createRequest (from: number): Promise<AxiosResponse<Stream>> {
+    return new Promise(resolve => {
+      axios({
+        method: 'get',
+        cancelToken: this.cancelToken.token,
+        responseType: 'stream',
+        url: this.part.parts.download.finalUrl,
+        headers: {
+          Range: `bytes=${from}-${this.part.to}`
+        }
+      }).then(resolve).catch(() => setTimeout(() => resolve(this.createRequest(from)), 1000))
+    })
   }
 
-  progress (chunk: Buffer | number) {
-    const totalProgress = typeof chunk === 'number' ? chunk : chunk.length
-    this.gotData()
-    this.downloaded += totalProgress
-    this.parts.download.progress(totalProgress)
+  createStream () {
+    return fs.createWriteStream(this.part.file, fs.existsSync(this.part.file) ? {flags: 'a'} : {})
+  }
+
+  createPipe () {
+    const stream = this.createStream()
+    stream.on('finish', this.completed.bind(this))
+    stream.on('error', this.download.bind(this))
+    this.request.data.on('data', this.progress.bind(this))
+    this.request.data.pipe(stream)
   }
 
   completed () {
-    logger.verbose(`Completed part ${this.file}`)
-    clearTimeout(this.dataCheckTimeout)
-    this.emit('completed')
+    clearTimeout(this.livenessCheckTimeout)
+    this.emit('complete')
+  }
+
+  progress (chunk: Buffer) {
+    this.gotData()
+    this.emit('progress', chunk)
   }
 
   gotData () {
     this.lastReceivedData = Date.now()
   }
 
-  async downloadRequest (from: number) {
-    this.cancelToken = axios.CancelToken.source()
-    return axios({
-      method: 'get',
-      cancelToken: this.cancelToken.token,
-      responseType: 'stream',
-      url: this.parts.download.finalUrl,
-      headers: {
-        Range: `bytes=${from}-${this.to}`
-      }
-    })
-  }
-
-  async pipeData () {
-    const stream = fs.createWriteStream(this.file, fs.existsSync(this.file) ? {flags: 'a'} : {})
-    const filesize = fs.existsSync(this.file) ? fs.statSync(this.file).size : 0
-    const from = this.from + filesize
-    if (from < this.to) {
-      this.request = await this.downloadRequest(from)
-      this.request.data.on('data', this.progress.bind(this))
-      this.request.data.on('end', this.completed.bind(this))
-      this.request.data.on('error', this.error.bind(this))
-      this.request.data.pipe(stream)
-    } else {
-      this.progress(filesize)
-      this.completed()
-    }
-  }
-
-  async dataCheck () {
+  livenessCheck () {
     if (Date.now() - this.lastReceivedData > 10000) {
-      logger.debug(`${this.file} may have stalled, restarting.`)
+      logger.debug(`${this.part.file} may have stalled, restarting.`)
       this.cancelToken.cancel('Restarting due to inactivity.')
-      this.pipeData()
+      this.download()
     }
-    this.dataCheckTimeout = setTimeout(this.dataCheck.bind(this), 10000)
+    this.livenessCheckTimeout = setTimeout(this.livenessCheck.bind(this), 10000)
+  }
+}
+
+class Part extends EventEmitter {
+  parts: Parts
+  partNumber: number
+  equalBytes: number
+  file: string
+  downloaded = 0
+  constructor (parts: Parts, partNumber: number, tempName: string) {
+    super()
+    this.parts = parts
+    this.partNumber = partNumber
+    this.equalBytes = Math.floor(parts.download.contentLength / TOTAL_PARTS)
+    this.file = path.join(config.tempPath, `${tempName}.part.${this.partNumber+1}`)
   }
 
-  async download () {
-    try {
-      return await new Promise((resolve) => {
-        this.on('completed', resolve)
-        this.gotData()
-        this.dataCheck()
-        this.pipeData()
-      })
+  get contentLength () {
+    return this.to - this.from
+  }
 
-    } catch (e) {
-      this.error(e)
-      logger.error(e)
-    }
+  get from () {
+    // part number 0 = 0 * 50 = 0
+    // part number 1 = 1 * 50 + 1 = 51
+    // part number 2 = 2 * 50 + 1= 101
+    return this.partNumber ? (this.partNumber * this.equalBytes) + 1 : 0
+  }
+
+  get to () {
+    // part number 0 = (0+1) * 50 = 50
+    // part number 1 = (1+1) * 50 = 100
+    // part number 2 = (2+1) * 50 = 150
+    return this.partNumber === TOTAL_PARTS-1 ? this.parts.download.contentLength : (this.partNumber+1) * this.equalBytes
+  }
+
+  // error (e: Error) {
+  //   logger.error(e)
+  //   logger.debug(this)
+  //   this.parts.download.emit('error', e)
+  // }
+
+  progress (chunk: Buffer | number) {
+    const totalProgress = typeof chunk === 'number' ? chunk : chunk.length
+    this.downloaded += totalProgress
+    this.parts.download.progress(totalProgress)
+  }
+
+  completed () {
+    this.downloaded = this.from - this.to
+    logger.verbose(`Completed part ${this.file}`)
+    this.emit('completed')
+  }
+
+
+  download () {
+    const downloader = new DownloadPart(this)
+    downloader.on('complete', this.completed.bind(this))
+    downloader.on('progress', this.progress.bind(this))
+    downloader.download()
   }
 }
 
@@ -155,7 +182,10 @@ export default class Parts extends Driver {
     this.createParts()
 
     // await this.parts[0].download()
-    await Promise.all(this.parts.map(async p => await p.download()))
+    await Promise.all(this.parts.map(part => new Promise(resolve => {
+      part.download()
+      part.on('complete', resolve)
+    })))
     await this.joinParts()
     await this.destroyParts()
   }
@@ -172,6 +202,14 @@ export default class Parts extends Driver {
 
   private async joinParts () {
     await mergeFiles(this.parts.map(p => p.file), this.download.filepath)
+  }
+
+  toObject () {
+    return {
+      parts: this.parts.map(part => ({
+        progress: Math.round(part.downloaded / part.contentLength * 100)
+      }))
+    }
   }
 }
 
