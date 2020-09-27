@@ -54,6 +54,9 @@ class DownloadPart extends EventEmitter {
     if (this.filesize === this.part.contentLength) {
       return this.completed()
     }
+    if (this.filesize > 0) {
+      logger.debug('we are continuing a download')
+    }
     this.cancelToken = axios.CancelToken.source()
     this.request = await this.createRequest(this.part.from + this.filesize)
     this.createPipe()
@@ -155,7 +158,8 @@ class Part extends EventEmitter {
   }
 
   completed () {
-    this.downloaded = this.from - this.to
+    this.downloaded = this.contentLength
+    this.progress(0)
     logger.verbose(`Completed part ${this.file}`)
     this.emit('completed')
   }
