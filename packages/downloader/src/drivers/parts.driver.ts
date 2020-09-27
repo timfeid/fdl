@@ -161,7 +161,7 @@ class Part extends EventEmitter {
     this.downloaded = this.contentLength
     this.progress(0)
     logger.verbose(`Completed part ${this.file}`)
-    this.emit('completed')
+    this.emit('complete')
   }
 
 
