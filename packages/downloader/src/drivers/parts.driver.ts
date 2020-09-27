@@ -59,6 +59,7 @@ class DownloadPart extends EventEmitter {
 
     if (this.filesize > 0) {
       logger.debug('we are continuing a download')
+      this.emit('progress', this.filesize)
     }
 
     try {
