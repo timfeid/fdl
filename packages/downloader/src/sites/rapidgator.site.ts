@@ -29,7 +29,7 @@ export default class Rapidgator extends Site {
   }
 
   async authenticate () {
-    if (!!this.username && !!this.password && this.needsAuthentication()) {
+    if (!!this.username && !!this.password && await this.needsAuthentication()) {
       await this.getSid()
     }
   }
