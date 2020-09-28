@@ -37,7 +37,6 @@ class DownloadPart extends EventEmitter {
   part: Part
   request: AxiosResponse<Stream>
   cancelToken: CancelTokenSource
-  filesize = 0
   lastReceivedData = Date.now()
   livenessCheckTimeout: NodeJS.Timeout
   constructor (part: Part) {
@@ -45,26 +44,26 @@ class DownloadPart extends EventEmitter {
     this.part = part
   }
 
-  refreshFilesize () {
-    this.filesize = fs.existsSync(this.part.file) ? fs.statSync(this.part.file).size : 0
-  }
-
   async download () {
-    this.refreshFilesize()
+    const filesize = fs.existsSync(this.part.file) ? fs.statSync(this.part.file).size : 0
 
-    if (this.filesize + this.part.from >= this.part.to) {
+    if (this.livenessCheckTimeout) {
+      clearTimeout(this.livenessCheckTimeout)
+    }
+
+    if (filesize > 0) {
+      logger.debug('we are continuing a download')
+      this.emit('progress', filesize)
+    }
+
+    if (filesize + this.part.from >= this.part.to) {
       console.log('this part is completed already')
       return this.completed()
     }
 
-    if (this.filesize > 0) {
-      logger.debug('we are continuing a download')
-      this.emit('progress', this.filesize)
-    }
-
     try {
       this.cancelToken = axios.CancelToken.source()
-      this.request = await this.createRequest(this.part.from + this.filesize)
+      this.request = await this.createRequest(this.part.from + filesize)
       this.createPipe()
       this.livenessCheck()
     } catch (e) {

@@ -24,9 +24,14 @@ export class Download extends EventEmitter {
   private basepath = config.downloadPath
   private previousTotal = 0
   private retryCount = 0
+  private _completed = false
 
   public get originalUrl () {
     return this.url
+  }
+
+  public get completed () {
+    return this._completed
   }
 
   public get contentLength () {
@@ -61,6 +66,7 @@ export class Download extends EventEmitter {
 
   complete () {
     logger.verbose(`Completed download ${this.filepath}`)
+    this._completed = true
     this.emit('complete')
   }
 
