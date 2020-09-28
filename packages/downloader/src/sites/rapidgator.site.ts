@@ -5,7 +5,6 @@ import qs from 'querystring'
 import {logger} from '@fdl/logger'
 
 type SID = {
-  last_retrieved: number
   session_id: string
   expire_date: number
   traffic_left: string
@@ -36,9 +35,7 @@ export default class Rapidgator extends Site {
   }
 
   async needsAuthentication () {
-    const oneHourAgo = Date.now() - (1000 * 60 * 60)
-
-    return !this.sid || this.sid.last_retrieved < oneHourAgo
+    return !this.sid
   }
 
   async getSid() {
@@ -59,10 +56,8 @@ export default class Rapidgator extends Site {
 
       const response = await this.authenticatingRequest
       this.authenticatingRequest = undefined
-      this.sid = {
-        ...response.data.response,
-        last_retrieved: Date.now(),
-      }
+      this.sid = response.data.response
+      setTimeout(() => this.sid = undefined, 3600000)
     } catch (e) {
       logger.error(e)
       if (e.response) {

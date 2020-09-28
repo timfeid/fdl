@@ -14,11 +14,11 @@ describe('site matcher', () => {
     expect(matchSite('https://rapidgator.net/file/cd292d534617e8b65831a25c4d6b9613/test.txt.html')).to.be.instanceOf(Rapidgator)
   })
 
-  it('can authenticate', async () => {
+  it('can authenticate rapidgator', async () => {
     await rapidgator.authenticate()
     expect(rapidgator.sid).to.not.be.undefined
     const lastRetrieved = rapidgator.sid.last_retrieved
-    await new Promise(resolve => setTimeout(resolve, 2))
+    await new Promise(resolve => setTimeout(resolve, 200))
     await rapidgator.authenticate()
     expect(rapidgator.sid.last_retrieved).to.eq(lastRetrieved)
   })
