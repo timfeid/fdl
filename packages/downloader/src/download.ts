@@ -133,6 +133,7 @@ export class Download extends EventEmitter {
       this.emit('progress', this)
     }
     if (this.downloaded === this.contentLength) {
+      console.log('downloading complete for', this.originalUrl)
       this.emit('downloading-complete')
     }
   }

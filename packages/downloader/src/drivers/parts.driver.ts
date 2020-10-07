@@ -39,49 +39,53 @@ class DownloadPart extends EventEmitter {
   cancelToken: CancelTokenSource
   lastReceivedData = Date.now()
   livenessCheckTimeout: NodeJS.Timeout
+  isComplete = false
   constructor (part: Part) {
     super()
     this.part = part
   }
 
   async download () {
-    const filesize = fs.existsSync(this.part.file) ? fs.statSync(this.part.file).size : 0
-
-    if (this.livenessCheckTimeout) {
-      clearTimeout(this.livenessCheckTimeout)
-    }
+    let filesize = fs.existsSync(this.part.file) ? fs.statSync(this.part.file).size : 0
+    this.gotData()
+    clearTimeout(this.livenessCheckTimeout)
 
     if (filesize > 0) {
       logger.debug('we are continuing a download')
+      console.log('FILESIZE', filesize, filesize+this.part.from, this.part.contentLength)
       this.emit('progress', filesize)
     }
 
-    if (filesize + this.part.from >= this.part.to) {
-      console.log('this part is completed already')
+    if (filesize === this.part.contentLength) {
+      console.log('this part is already completed')
       return this.completed()
+    }
+
+    if (filesize > this.part.contentLength) {
+      logger.error('we have filesize larger than we should, restarting')
+      fs.unlinkSync(this.part.file)
+      filesize = 0
     }
 
     try {
       this.cancelToken = axios.CancelToken.source()
-      this.request = await this.createRequest(this.part.from + filesize)
+      this.request = await this.createRequest(filesize + this.part.from)
       this.createPipe()
       this.livenessCheck()
     } catch (e) {
-      console.error(e)
+      this.error(e)
     }
   }
 
-  createRequest (from: number): Promise<AxiosResponse<Stream>> {
-    return new Promise((resolve, reject) => {
-      axios({
-        method: 'get',
-        cancelToken: this.cancelToken.token,
-        responseType: 'stream',
-        url: this.part.parts.download.finalUrl,
-        headers: {
-          Range: `bytes=${from}-${this.part.to}`
-        }
-      }).then(resolve).catch(reject)
+  createRequest (from: number) {
+    return axios({
+      method: 'get',
+      cancelToken: this.cancelToken.token,
+      responseType: 'stream',
+      url: this.part.parts.download.finalUrl,
+      headers: {
+        Range: `bytes=${from}-${this.part.to}`
+      }
     })
   }
 
@@ -92,14 +96,29 @@ class DownloadPart extends EventEmitter {
   createPipe () {
     const stream = this.createStream()
     stream.on('finish', this.completed.bind(this))
-    stream.on('error', this.download.bind(this))
+    stream.on('error', this.error.bind(this))
     this.request.data.on('data', this.progress.bind(this))
     this.request.data.pipe(stream)
   }
 
+  error (e: any) {
+    logger.error(e)
+    if (e.response && e.response.status === 404) {
+      clearTimeout(this.livenessCheckTimeout)
+    }
+  }
+
   completed () {
-    clearTimeout(this.livenessCheckTimeout)
-    this.emit('complete')
+    const filesize = fs.existsSync(this.part.file) ? fs.statSync(this.part.file).size : 0
+    // keep the timeout going if we're not at the correct size
+    if (filesize === this.part.contentLength) {
+      console.log('completed')
+      clearTimeout(this.livenessCheckTimeout)
+      if (!this.isComplete) {
+        this.isComplete = true
+        this.emit('complete')
+      }
+    }
   }
 
   progress (chunk: Buffer) {
@@ -112,12 +131,13 @@ class DownloadPart extends EventEmitter {
   }
 
   livenessCheck () {
-    if (Date.now() - this.lastReceivedData > 10000) {
+    if (Date.now() - this.lastReceivedData > 30000) {
       logger.debug(`${this.part.file} may have stalled, restarting.`)
       this.cancelToken.cancel('Restarting due to inactivity.')
       this.download()
     }
-    this.livenessCheckTimeout = setTimeout(this.livenessCheck.bind(this), 10000)
+    clearTimeout(this.livenessCheckTimeout)
+    this.livenessCheckTimeout = setTimeout(this.livenessCheck.bind(this), 30000)
   }
 }
 
@@ -133,10 +153,11 @@ class Part extends EventEmitter {
     this.partNumber = partNumber
     this.equalBytes = Math.floor(parts.download.contentLength / TOTAL_PARTS)
     this.file = path.join(config.tempPath, `${tempName}.part.${this.partNumber+1}`)
+    console.log(this.file, this.equalBytes, this.from, this.to, this.contentLength)
   }
 
   get contentLength () {
-    return this.to - this.from
+    return this.to - this.from + 1 // inclusive
   }
 
   get from () {
@@ -150,7 +171,7 @@ class Part extends EventEmitter {
     // part number 0 = (0+1) * 50 = 50
     // part number 1 = (1+1) * 50 = 100
     // part number 2 = (2+1) * 50 = 150
-    return this.partNumber === TOTAL_PARTS-1 ? this.parts.download.contentLength : (this.partNumber+1) * this.equalBytes
+    return this.partNumber === TOTAL_PARTS-1 ? this.parts.download.contentLength - 1 /* 0 is the first byte */ : (this.partNumber+1) * this.equalBytes
   }
 
   // error (e: Error) {

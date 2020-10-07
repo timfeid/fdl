@@ -12,9 +12,11 @@ export class Manager extends EventEmitter {
 
   public startNextDownload () {
     const downloadingCount = this.downloads.filter(download => download.started && !download.completed).length
+    console.log(this.maxDownloads, downloadingCount)
     if (!this.maxDownloads || this.maxDownloads <= 0 || downloadingCount < this.maxDownloads) {
       const nextDownload = this.downloads.find(download => !download.started)
       if (nextDownload) {
+        console.log('starting download', nextDownload.originalUrl)
         nextDownload.start()
         this.startNextDownload()
       }
@@ -23,6 +25,7 @@ export class Manager extends EventEmitter {
 
   public add (url: string, autoStart = false) {
     const download = new Download(url)
+    download.on('started', () => console.log('started downloading', url))
     download.on('downloading-complete', this.startNextDownload.bind(this))
     download.on('complete', this.startNextDownload.bind(this))
     download.on('error', this.startNextDownload.bind(this))
