@@ -67,17 +67,19 @@ class DownloadPart extends EventEmitter {
       filesize = 0
     }
 
+    this.livenessCheck()
+
     try {
-      this.cancelToken = axios.CancelToken.source()
       this.request = await this.createRequest(filesize + this.part.from)
       this.createPipe()
-      this.livenessCheck()
     } catch (e) {
       this.error(e)
     }
   }
 
   createRequest (from: number) {
+    this.cancelToken = axios.CancelToken.source()
+
     return axios({
       method: 'get',
       cancelToken: this.cancelToken.token,
