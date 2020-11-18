@@ -86,11 +86,13 @@ export class Download extends EventEmitter {
       this.progress(filesize)
       if (filesize !== this._contentLength) {
         this.driver = matchDriver(this, response)
+        logger.verbose('matched driver')
         await this.driver.start()
       }
       this.complete()
     } catch (e) {
       if (this.retryCount++ === this.MAX_RETRIES) {
+        logger.error(e)
         this.emit('error', e)
       } else {
         logger.error(e)

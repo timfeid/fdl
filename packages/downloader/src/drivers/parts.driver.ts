@@ -43,9 +43,11 @@ class DownloadPart extends EventEmitter {
   constructor (part: Part) {
     super()
     this.part = part
+    console.log('created part', part.file, part.partNumber)
   }
 
   async download () {
+    logger.debug(`download called for ${this.part.parts.download.originalUrl} part ${this.part.partNumber}`)
     let filesize = fs.existsSync(this.part.file) ? fs.statSync(this.part.file).size : 0
     this.gotData()
     clearTimeout(this.livenessCheckTimeout)
@@ -57,7 +59,7 @@ class DownloadPart extends EventEmitter {
     }
 
     if (filesize === this.part.contentLength) {
-      console.log('this part is already completed')
+      logger.debug('this part is already completed')
       return this.completed()
     }
 
@@ -71,8 +73,10 @@ class DownloadPart extends EventEmitter {
 
     try {
       this.request = await this.createRequest(filesize + this.part.from)
+      logger.debug(`started request for ${this.part.parts.download.originalUrl} part ${this.part.partNumber}`)
       this.createPipe()
     } catch (e) {
+      logger.debug(`error for ${this.part.parts.download.originalUrl} part ${this.part.partNumber}`)
       this.error(e)
     }
   }
@@ -207,26 +211,41 @@ class Part extends EventEmitter {
 export default class Parts extends Driver {
   parts: Part[] = []
   tempName: string
+  maxTries = 3
+  tries = 0
 
   constructor (download: Download) {
     super(download)
     this.tempName = md5(download.originalUrl).substr(0, 10)
+    console.log('parts driver initiated for', download.originalUrl)
   }
 
   async start () {
-    this.createParts()
+    if (!this.parts.length) {
+      this.createParts()
+    }
 
     // await this.parts[0].download()
-    await Promise.all(this.parts.map(part => new Promise(resolve => {
-      part.on('complete', resolve)
-      part.download()
-    })))
+    try {
+      await Promise.all(this.parts.map(part => new Promise(resolve => {
+        part.on('complete', resolve)
+        logger.debug(`started downloading part ${part.partNumber} for ${part.parts.download.originalUrl}`)
+        part.download()
+      })))
+    } catch (e) {
+      logger.error('something went wrong in parts.start. going to restart')
+      if (++this.tries !== this.maxTries) {
+        this.start()
+      }
+      console.log(e)
+    }
     await this.joinParts()
     await this.destroyParts()
   }
 
   private createParts () {
     for (let i = 0;i < TOTAL_PARTS; i++) {
+      logger.debug(`created part ${i} for ${this.download.originalUrl}`)
       this.parts.push(new Part(this, i, this.tempName))
     }
   }
