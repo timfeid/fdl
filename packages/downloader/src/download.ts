@@ -70,6 +70,14 @@ export class Download extends EventEmitter {
     this.emit('complete')
   }
 
+  restart () {
+    if (this.retryCount++ !== this.MAX_RETRIES) {
+      logger.info('Restarting in', this.RETRY_DELAY, 'seconds')
+
+      setTimeout(() => this.start(), this.RETRY_DELAY * 1000)
+    }
+  }
+
   async start () {
     this._started = true
     if (this.retryCount > 0) {
@@ -77,6 +85,12 @@ export class Download extends EventEmitter {
     }
     try {
       this._finalUrl = await this.site.transformUrl(this.url)
+    } catch (e) {
+      console.error(e)
+      return this.restart()
+    }
+
+    try {
       const response = await this.getHeaders()
 
       this._filepath = this.determineFilepath(this.determineFilename(response.headers))
@@ -91,15 +105,8 @@ export class Download extends EventEmitter {
       }
       this.complete()
     } catch (e) {
-      if (this.retryCount++ === this.MAX_RETRIES) {
-        logger.error(e)
-        this.emit('error', e)
-      } else {
-        logger.error(e)
-        logger.info('Restarting in', this.RETRY_DELAY, 'seconds')
-
-        setTimeout(() => this.start(), this.RETRY_DELAY * 1000)
-      }
+      console.error(e)
+      this.restart()
     }
   }
 
@@ -142,12 +149,18 @@ export class Download extends EventEmitter {
 
   private async getHeaders () {
     logger.verbose(`Getting headers for ${this.originalUrl}`)
-    return await axios({
-      method: 'head',
-      url: this.finalUrl,
-      withCredentials: true,
-      headers: {}
-    })
+    try {
+
+      return await axios({
+        method: 'head',
+        url: this.finalUrl,
+        withCredentials: true,
+        headers: {}
+      })
+    } catch (e) {
+      console.error(e)
+      this.restart()
+    }
   }
 
   public toObject (): DownloadObject {
