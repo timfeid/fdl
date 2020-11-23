@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "serve": "tsnd -r tsconfig-paths/register src",
-    "test": "NODE_ENV=test ts-mocha --file __tests__/setup.ts --paths '__tests__/*.test.ts' --exit",
+    "test": "NODE_ENV=test ts-mocha --file __tests__/setup.ts --paths '__tests__/*.test.ts' --timeout 10000 --exit",
     "lint": "eslint ."
   },
   "devDependencies": {

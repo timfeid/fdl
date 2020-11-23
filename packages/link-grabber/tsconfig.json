@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "allowJs": true,
+    "paths": {
+      "@fdl/*": [
+        "packages/*/src"
+      ]
+    },
+  },
+  "include": [
+    "./src"
+  ]
+}

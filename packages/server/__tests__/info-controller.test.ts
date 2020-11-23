@@ -90,4 +90,75 @@ describe('info controller', () => {
       season_number: 0,
     })
   })
+
+
+  it('get movie info from an hdencode link', async () => {
+    const url = encodeURIComponent('https://hdencode.com/the-crazies-2010-1080p-bluray-dd5-1-x264-dirty-8-8-gb/')
+
+    const response = await request(app.callback()).get(`/info/from-link?url=${url}`).type('json')
+    expect(response.status).to.eq(200)
+    expect(response.body).to.containSubset({
+      url: 'https://hdencode.com/the-crazies-2010-1080p-bluray-dd5-1-x264-dirty-8-8-gb/#unlocked',
+      name: 'The.Crazies.2010.1080p.BluRay.DD5.1.x264-DiRTY – 8.8 GB',
+      type: 'movie',
+      urls: [
+        'https://rapidgator.net/file/65c3840b1f2e585101e7f7c11fb52b51/TheCais210180BlRayDD5x6DiRY.part1.rar.html',
+        'https://rapidgator.net/file/19480c5e197693a40ed0fee5e99c6f89/TheCais210180BlRayDD5x6DiRY.part2.rar.html',
+        'https://rapidgator.net/file/cd0c045a9e113ef9fe7b91aedc5a9a98/TheCais210180BlRayDD5x6DiRY.part3.rar.html'
+      ],
+      imdb: 'tt0455407',
+      title: 'The Crazies',
+      year: '2010',
+      blurb: 'After a strange and insecure plane crash, an unusual toxic virus enters a quaint farming town. A young couple are quarantined, but they fight for survival along with help from a couple of people.',
+      poster: 'https://m.media-amazon.com/images/M/MV5BMjAzMDU5OTg0NV5BMl5BanBnXkFtZTcwNDQ4MjcwMw@@._V1_SX300.jpg'
+    })
+  })
+
+
+  it('get episode info from an hdencode link', async () => {
+    const url = encodeURIComponent('https://hdencode.com/young-sheldon-s04e03-training-wheels-and-an-unleashed-chicken-1080p-amzn-web-dl-ddp5-1-h-264-tommy-1-0-gb/')
+
+    const response = await request(app.callback()).get(`/info/from-link?url=${url}`).type('json')
+    expect(response.status).to.eq(200)
+    expect(response.body).to.containSubset({
+      url: 'https://hdencode.com/young-sheldon-s04e03-training-wheels-and-an-unleashed-chicken-1080p-amzn-web-dl-ddp5-1-h-264-tommy-1-0-gb/#unlocked',
+      name: 'Young.Sheldon.S04E03.Training.Wheels.and.an.Unleashed.Chicken.1080p.AMZN.WEB-DL.DDP5.1.H.264-TOMMY – 1.0 GB',
+      type: 'series',
+      urls: [
+        'https://rapidgator.net/file/a16b7edb3760a913a75f24684360f4fb/YugSednS0403TaninWelsandUlahdCikn18pAZWEDDP126TMY.rar.html'
+      ],
+      imdb: null,
+      title: 'Young Sheldon',
+      year: '2017-09-25',
+      episode: 3,
+      season: 4,
+      blurb: 'With college in sight, Sheldon is determined to ride his bike without training wheels. Also, Mary and George Sr. argue overparenting styles.',
+      poster: 'https://image.tmdb.org/t/p/original/aESxB2HblKlDzma39xVefa20pbW.jpg'
+    })
+  })
+
+
+  it('get tv pack info from an hdencode link', async () => {
+    const url = encodeURIComponent('https://hdencode.com/voices-of-fire-s01-1080p-nf-web-dl-ddp5-1-h-264-ntb-11-1-gb/')
+
+    const response = await request(app.callback()).get(`/info/from-link?url=${url}`).type('json')
+    expect(response.status).to.eq(200)
+    expect(response.body).to.containSubset({
+      url: 'https://hdencode.com/voices-of-fire-s01-1080p-nf-web-dl-ddp5-1-h-264-ntb-11-1-gb/#unlocked',
+      name: 'Voices.of.Fire.S01.1080p.NF.WEB-DL.DDP5.1.H.264-NTb – 11.1 GB',
+      type: 'series',
+      urls: [
+        'https://rapidgator.net/file/f6ac75a56272154341296fe0caa6e4b7/VoieofFrS1100WBLDP124Nb.part1.rar.html',
+        'https://rapidgator.net/file/489238eafccd7a8b062f97695463b450/VoieofFrS1100WBLDP124Nb.part2.rar.html',
+        'https://rapidgator.net/file/f75522c4832e4de30cbf9969cbcae4fe/VoieofFrS1100WBLDP124Nb.part3.rar.html'
+      ],
+      imdb: null,
+      title: 'Voices of Fire',
+      year: '2020-11-20',
+      episode: undefined,
+      season: 1,
+      blurb: 'Pharrell Williams\'s hometown community leaders attempt to build one of the world\'s most inspiring gospel choirs.',
+      poster: 'https://image.tmdb.org/t/p/original/NiwMyjt3ItX0VsP0S5YjPKhh0p.jpg'
+    })
+  })
 })

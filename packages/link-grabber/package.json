@@ -1,0 +1,24 @@
+{
+  "name": "@fdl/link-grabber",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "serve": "tsnd -r tsconfig-paths/register src",
+    "test": "NODE_ENV=test ts-mocha --paths '__tests__/*.test.ts' --timeout 10000 --exit",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@types/puppeteer": "^5.4.0",
+    "chai": "^4.2.0",
+    "eslint": "^7.8.1",
+    "mocha": "^8.1.3",
+    "ts-mocha": "^7.0.0",
+    "ts-node-dev": "^1.0.0-pre.62",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.0.2"
+  },
+  "dependencies": {
+    "puppeteer": "^5.5.0"
+  }
+}

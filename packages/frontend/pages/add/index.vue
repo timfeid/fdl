@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="loading" class="loader">
+      <lottie-animation path="loading.json" />
+    </div>
     <v-toolbar flat>
       <v-toolbar-title>
         <v-icon>mdi-link-plus</v-icon>
@@ -26,11 +29,39 @@
             style="cursor: pointer"
             @click="gotoStep(1)"
           >
-            Select a title
-            <small v-text="stepOneSummary"></small>
+            Referrer
+            <small>Where did you find the links?</small>
           </v-stepper-step>
 
           <v-stepper-content step="1">
+            <form @submit.prevent="lookUpLink">
+              <v-text-field
+                v-model="referrer"
+                prepend-icon="mdi-link"
+                label="Referrer"
+                hint="Where did you get the download links?"
+                required
+              ></v-text-field>
+
+              <div class="mt-3">
+                <v-btn type="submit" color="info" :disabled="!referrer">
+                  Continue <v-icon>mdi-chevron-right</v-icon>
+                </v-btn>
+              </div>
+            </form>
+          </v-stepper-content>
+
+          <v-stepper-step
+            :complete="step > 2"
+            step="2"
+            style="cursor: pointer"
+            @click="gotoStep(2)"
+          >
+            Select a title
+            <small v-text="stepTwoSummary"></small>
+          </v-stepper-step>
+
+          <v-stepper-content step="2">
             <v-sheet color="white" class="border mb-4">
               <form @submit.prevent="performSearch">
                 <div class="d-flex align-baseline">
@@ -49,6 +80,7 @@
                 </div>
               </form>
               <v-item-group
+                v-if="step === 2"
                 v-model="selected"
                 mandatory
                 class="d-flex flex-wrap"
@@ -108,7 +140,7 @@
                 </v-item>
               </v-item-group>
               <v-item-group
-                v-if="seriesInfo"
+                v-if="seriesInfo && step === 2"
                 v-model="selectedSeason"
                 mandatory
                 class="d-flex flex-wrap mt-4"
@@ -201,30 +233,23 @@
             <v-btn
               color="primary"
               :disabled="!currentSelectionObj"
-              @click="currentSelectionObj ? gotoStep(2) : null"
+              @click="currentSelectionObj ? gotoStep(3) : null"
               >Continue</v-btn
             >
             <!-- <v-btn text>Cancel</v-btn> -->
           </v-stepper-content>
 
           <v-stepper-step
-            :complete="step > 2"
-            step="2"
+            :complete="step > 3"
+            step="3"
             style="cursor: pointer"
-            @click="gotoStep(2)"
+            @click="gotoStep(3)"
             >Download links</v-stepper-step
           >
 
-          <v-stepper-content step="2">
+          <v-stepper-content step="3">
             <v-sheet>
-              <form @submit.prevent="checkStep2">
-                <v-text-field
-                  v-model="referrer"
-                  prepend-icon="mdi-link"
-                  label="Referrer"
-                  hint="Where did you get the download links?"
-                  required
-                ></v-text-field>
+              <form @submit.prevent="checkStep3">
                 <v-textarea
                   v-model="rawUrls"
                   prepend-icon="mdi-download-multiple"
@@ -242,11 +267,11 @@
             </v-sheet>
           </v-stepper-content>
 
-          <v-stepper-step step="3" style="cursor: pointer" @click="gotoStep(3)"
+          <v-stepper-step step="4" style="cursor: pointer" @click="gotoStep(4)"
             >Review information</v-stepper-step
           >
 
-          <v-stepper-content step="3">
+          <v-stepper-content step="4">
             <v-card v-if="downloadInfo" width="300" class="mr-4 mb-4">
               <v-img
                 :src="downloadInfo.poster"
@@ -280,9 +305,15 @@
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 import { SearchResult } from '@fdl/types'
+import LottieAnimation from "lottie-vuejs/src/LottieAnimation.vue"
 
-@Component
+@Component({
+  components: {
+    LottieAnimation,
+  },
+})
 export default class AddIndex extends Vue {
+  loading = false
   referrer = ''
 
   rawUrls = ''
@@ -306,19 +337,23 @@ export default class AddIndex extends Vue {
   step = 1
 
   gotoStep(step: number) {
-    if (step === 2) {
-      if (this.currentSelectionObj) {
-        this.step = 2
-      }
+    if (step === 2 && !this.referrer) {
       return
     }
     if (step === 3) {
-      return this.checkStep2()
+      if (this.currentSelectionObj) {
+        this.step = 3
+      }
+      return
+    }
+    if (step === 4) {
+      return this.checkStep3()
     }
     this.step = step
   }
 
   async getSeasonData() {
+    this.loading = true
     this.seriesInfo = null
     if (
       this.currentSelectionObj &&
@@ -326,7 +361,6 @@ export default class AddIndex extends Vue {
       this.selected
     ) {
       const results = await this.$axios(`/info/series/${this.selected}`)
-
       this.seriesInfo = results.data
     }
   }
@@ -350,10 +384,54 @@ export default class AddIndex extends Vue {
     this.results = results.data
   }
 
-  checkStep2() {
+  checkStep3() {
     if (this.urls.length > 0 && !!this.referrer) {
-      this.step = 3
+      this.step = 4
     }
+  }
+
+  async lookUpLink() {
+    this.loading = true
+    try {
+      const result = await this.$axios('/info/from-link', {
+        params: { url: this.referrer },
+      })
+      this.search = result.data.title
+
+      await this.performSearch()
+      this.selected = this.results[0].id
+      if (result.data.season) {
+        // this.selectedSeason = result.data.season
+        await this.getSeasonData()
+
+        const season = this.seriesInfo.seasons.find(
+          (s: any) => s.season_number === result.data.season
+        )
+        if (season) {
+          this.selectedSeason = season.id
+        }
+
+        await this.getEpisodesData()
+
+        if (result.data.episode) {
+          const episode = this.seasonInfo.episodes.find(
+            (s: any) => s.episode_number === result.data.episode
+          )
+          if (episode) {
+            this.selectedEpisode = episode.id
+          }
+        }
+      }
+
+      this.rawUrls = result.data.urls.join('\n')
+      this.referrer = result.data.url
+      this.gotoStep(4)
+    } catch (e) {
+      console.log('unable to look that up')
+      this.gotoStep(2)
+    }
+
+    this.loading = false
   }
 
   color(active: boolean) {
@@ -382,7 +460,7 @@ export default class AddIndex extends Vue {
     return this.results.find((result) => result.id === this.selected)
   }
 
-  get stepOneSummary() {
+  get stepTwoSummary() {
     if (this.currentSelectionObj) {
       let result = this.currentSelectionObj.name
 
@@ -471,3 +549,21 @@ export default class AddIndex extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+.loader {
+  z-index: 10000;
+  background: rgba(255,255,255,.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  div {
+    max-width: 150px;
+  }
+}
+</style>

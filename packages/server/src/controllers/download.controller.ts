@@ -2,7 +2,6 @@ import { Context } from 'koa'
 import joi from 'joi'
 import { app } from '../app'
 import { Download, Type, Url } from '@fdl/data'
-import { Step } from '@fdl/types'
 
 class DownloadController {
   public async list (ctx: Context) {
