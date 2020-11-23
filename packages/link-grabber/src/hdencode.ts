@@ -1,7 +1,11 @@
 import puppeteer from 'puppeteer'
 
 export async function hdencode(url: string) {
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch(process.env.CHROME_BIN ? {
+    headless: true,
+    executablePath: process.env.CHROME_BIN || null,
+    args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']
+  } : {})
   const page = await browser.newPage()
 
   await page.goto(url)

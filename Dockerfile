@@ -1,6 +1,9 @@
 FROM alpine
 
-RUN apk add --update --no-cache nodejs yarn unrar python ffmpeg bash
+RUN apk add --update --no-cache nodejs yarn unrar python ffmpeg bash \
+    udev \
+    ttf-freefont \
+    chromium
 RUN rm -rf /var/cache/apk/*
 
 VOLUME ["/storage/downloads", "/storage/content"]
@@ -12,6 +15,8 @@ ENV DATABASE_LOCATION ${CONTENT_PATH}/database.sqlite
 ENV UNRAR_BIN /usr/bin/unrar
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3333
+ENV CHROME_BIN="/usr/bin/chromium-browser"
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 
 ARG API_LOCATION
 
