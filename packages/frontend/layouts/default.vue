@@ -70,12 +70,10 @@ export default class App extends Vue {
 
   @Watch('recentlyCompleted')
   emit() {
-    this.$toast(`${this.recentlyCompleted.title} has finished downloading`, {
-      color: 'blue darken-3',
-      classes: ['v-sheet', 'v-sheet--outlined'],
-      multiLine: true,
-      icon: 'mdi-download-circle',
-      timeout: 6000,
+    this.$toasted.show(`${this.recentlyCompleted.title} has finished downloading`, {
+      type: 'success',
+      icon: 'cloud-check',
+      duration: 6000,
     })
   }
 }
@@ -92,5 +90,22 @@ export default class App extends Vue {
 }
 .v-toolbar__title {
   font-weight: 200;
+}
+
+.toasted-container.top-right {
+  top: .25rem !important;
+  right: 1rem !important;
+}
+.toasted.outline {
+  border-radius: .25rem !important;
+  box-shadow: none !important;
+}
+.toast {
+  font-family: Roboto !important;
+  font-weight: 300 !important;
+  .mdi {
+    margin: .5rem .5rem .5rem -.4rem !important;
+    font-size: 1.5rem;
+  }
 }
 </style>

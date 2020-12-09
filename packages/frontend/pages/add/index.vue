@@ -528,12 +528,10 @@ export default class AddIndex extends Vue {
     this.error = {}
     try {
       await this.$axios.post('/downloads', this.downloadInfo)
-      this.$toast(`${this.downloadInfo.title} started downloading`, {
-        color: 'blue-grey',
-        classes: ['v-sheet', 'v-sheet--outlined'],
-        multiLine: true,
-        icon: 'mdi-plus-thick',
-        timeout: 6000,
+      this.$toasted.show(`${this.downloadInfo.title} started downloading`, {
+        type: 'info',
+        icon: 'progress-download',
+        duration: 6000,
       })
       this.referrer = ''
       this.rawUrls = ''

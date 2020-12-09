@@ -1,6 +1,9 @@
 import Vue from 'vue'
-import VuetifyToast from 'vuetify-toast-snackbar-ng'
+import Toasted from 'vue-toasted'
 
-Vue.use(VuetifyToast, {
-  y: 'top',
+Vue.use(Toasted, {
+  iconPack: 'mdi',
+  keepOnHover: true,
+  className: 'toast',
+  theme: 'outline',
 })
