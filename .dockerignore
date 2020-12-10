@@ -12,4 +12,8 @@
 !postcss.config.js
 !tsconfig.json
 !scripts/
+*/**/.nuxt
+*/**/dist
+*/**/.env
 */**/node_modules
+!.env

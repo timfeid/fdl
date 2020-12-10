@@ -1,4 +1,4 @@
-export default {
+const config = {
   /*
    ** Nuxt target
    ** See https://nuxtjs.org/api/configuration-target
@@ -55,7 +55,19 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: process.env.API_LOCATION || 'http://localhost:4242',
+    baseURL: 'http://localhost:4242', // Used as fallback if no runtime config is provided
+  },
+
+  publicRuntimeConfig: {
+    axios: {
+      browserBaseURL: process.env.API_LOCATION,
+    },
+  },
+
+  privateRuntimeConfig: {
+    axios: {
+      baseURL: process.env.API_LOCATION,
+    },
   },
   /*
    ** vuetify module configuration
@@ -84,3 +96,5 @@ export default {
    */
   build: {},
 }
+
+export default config
