@@ -12,8 +12,8 @@ describe('info controller', () => {
     expect(response.body).to.containSubset({
       title: 'South Park',
       season: 23,
-      episode: null,
     })
+    expect(response.body.episode).to.be.undefined
   })
   it('can look up tv episodes', async () => {
     const query = 'South.Park.S23E01.1080p.HDTV.x264-CRAVERS ~ 32.2 GB'
@@ -32,7 +32,7 @@ describe('info controller', () => {
     expect(response.status).to.eq(200)
     expect(response.body).to.containSubset({
       title: 'The Bellwether',
-      year: '2018',
+      year: '2020',
     })
   })
 
@@ -53,9 +53,9 @@ describe('info controller', () => {
     expect(response.status).to.eq(200)
     expect(response.body).to.containSubset([
       {
-        name: 'South Park',
-        firstAirDate: '1997-08-13',
-        type: 'series',
+        title: 'South Park',
+        year: '1997–',
+        type: {name: 'series'},
       },
     ])
   })
@@ -66,9 +66,9 @@ describe('info controller', () => {
     expect(response.status).to.eq(200)
     expect(response.body).to.containSubset([
       {
-        name: 'King of California',
-        firstAirDate: '2007',
-        type: 'movie',
+        title: 'King of California',
+        year: '2007',
+        type: {name: 'movie'},
       },
     ])
   })
@@ -78,7 +78,7 @@ describe('info controller', () => {
     const response = await request(app.callback()).get(`/info/series/${query}`).type('json')
     expect(response.status).to.eq(200)
     expect(response.body).to.containSubset({
-      name: 'South Park',
+      title: 'South Park',
     })
   })
 
@@ -109,8 +109,8 @@ describe('info controller', () => {
       imdb: 'tt0455407',
       title: 'The Crazies',
       year: '2010',
-      blurb: 'After a strange and insecure plane crash, an unusual toxic virus enters a quaint farming town. A young couple are quarantined, but they fight for survival along with help from a couple of people.',
-      poster: 'https://m.media-amazon.com/images/M/MV5BMjAzMDU5OTg0NV5BMl5BanBnXkFtZTcwNDQ4MjcwMw@@._V1_SX300.jpg'
+      blurb: 'Four friends find themselves trapped in their small hometown after they discover their friends and neighbors going quickly and horrifically insane.',
+      poster: 'https://image.tmdb.org/t/p/original/fiJFGiqXUelHJ9Ms8mtFOCsFf4B.jpg'
     })
   })
 
@@ -129,10 +129,10 @@ describe('info controller', () => {
       ],
       imdb: null,
       title: 'Young Sheldon',
-      year: '2017-09-25',
+      year: '2017–',
       episode: 3,
       season: 4,
-      blurb: 'With college in sight, Sheldon is determined to ride his bike without training wheels. Also, Mary and George Sr. argue overparenting styles.',
+      blurb: 'With college in sight, Sheldon is determined to ride his bike without training wheels. Also, Mary and George Sr. argue over parenting styles.',
       poster: 'https://image.tmdb.org/t/p/original/aESxB2HblKlDzma39xVefa20pbW.jpg'
     })
   })
@@ -154,7 +154,7 @@ describe('info controller', () => {
       ],
       imdb: null,
       title: 'Voices of Fire',
-      year: '2020-11-20',
+      year: '2020–',
       episode: undefined,
       season: 1,
       blurb: 'Pharrell Williams\'s hometown community leaders attempt to build one of the world\'s most inspiring gospel choirs.',

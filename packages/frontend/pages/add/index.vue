@@ -95,8 +95,8 @@
                   <v-card width="300" class="mr-4 mb-4">
                     <v-img
                       :src="
-                        result.backdropPath ||
-                        result.posterPath ||
+                        result.backdrop ||
+                        result.poster ||
                         'https://www.clipartmax.com/png/full/1-15852_exp-movie-icon.png'
                       "
                       width="300"
@@ -121,15 +121,15 @@
                           <v-icon
                             class="white--text mr-4"
                             v-text="
-                              result.type === 'series'
+                              result.type.name === 'series'
                                 ? 'mdi-television'
                                 : 'mdi-movie'
                             "
                           />
-                          {{ result.name }} &nbsp;
+                          {{ result.title }} &nbsp;
                           <span
                             v-if="
-                              result.type === 'movie' && result.firstAirDate
+                              result.type.name === 'movie' && result.firstAirDate
                             "
                             v-text="`(${result.firstAirDate})`"
                           />
@@ -189,7 +189,7 @@
                 v-if="
                   seasonInfo &&
                   currentSelectionObj &&
-                  currentSelectionObj.type === 'series'
+                  currentSelectionObj.type.name === 'series'
                 "
                 v-model="selectedEpisode"
                 class="d-flex flex-wrap mt-4"
@@ -304,8 +304,8 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { SearchResult } from '@fdl/types'
-import LottieAnimation from "lottie-vuejs/src/LottieAnimation.vue"
+// @ts-ignore
+import LottieAnimation from 'lottie-vuejs/src/LottieAnimation.vue'
 
 @Component({
   components: {
@@ -328,7 +328,7 @@ export default class AddIndex extends Vue {
 
   selectedEpisode = 0
 
-  results: SearchResult[] = []
+  results: any[] = []
 
   seriesInfo: Record<string, any> | null = null
 
@@ -357,10 +357,10 @@ export default class AddIndex extends Vue {
     this.seriesInfo = null
     if (
       this.currentSelectionObj &&
-      this.currentSelectionObj.type === 'series' &&
+      this.currentSelectionObj.type.name === 'series' &&
       this.selected
     ) {
-      const results = await this.$axios(`/info/series/${this.selected}`)
+      const results = await this.$axios(`/info/series/${this.selected}/raw`)
       this.seriesInfo = results.data
     }
   }
@@ -427,6 +427,7 @@ export default class AddIndex extends Vue {
       this.referrer = result.data.url
       this.gotoStep(4)
     } catch (e) {
+      console.log(e)
       console.log('unable to look that up')
       this.gotoStep(2)
     }
@@ -451,6 +452,7 @@ export default class AddIndex extends Vue {
     if (!this.seriesInfo) {
       return
     }
+    console.log(this.seriesInfo)
     return this.seriesInfo.seasons.find(
       (result: any) => result.id === this.selectedSeason
     )
@@ -462,7 +464,7 @@ export default class AddIndex extends Vue {
 
   get stepTwoSummary() {
     if (this.currentSelectionObj) {
-      let result = this.currentSelectionObj.name
+      let result = this.currentSelectionObj.title
 
       if (this.selectedSeasonObj) {
         result += ` S${this.selectedSeasonObj.season_number
@@ -507,13 +509,14 @@ export default class AddIndex extends Vue {
       return {
         urls: this.urls,
         referrer: this.referrer,
-        type: this.currentSelectionObj.type,
-        title: this.currentSelectionObj.name,
+        type: this.currentSelectionObj.type.name,
+        title: this.currentSelectionObj.title,
         year: this.year,
         blurb: this.selectedEpisodeObj
           ? this.selectedEpisodeObj.overview
           : this.currentSelectionObj.blurb,
-        poster: this.currentSelectionObj.posterPath,
+        poster: this.currentSelectionObj.poster,
+        backdrop: this.currentSelectionObj.backdrop,
         season: this.selectedSeasonObj
           ? this.selectedSeasonObj.season_number
           : undefined,
@@ -551,7 +554,7 @@ export default class AddIndex extends Vue {
 <style lang="scss">
 .loader {
   z-index: 10000;
-  background: rgba(255,255,255,.5);
+  background: rgba(255, 255, 255, 0.5);
   position: fixed;
   top: 0;
   left: 0;

@@ -18,6 +18,7 @@ describe('downloads a series', () => {
       episode: 2,
       blurb: 'string',
       poster: 'https://image.tmdb.org/t/p/original/9BvRze9keEyTzB6ewmDvjzFGYuG.jpg',
+      backdrop: 'https://image.tmdb.org/t/p/original/9BvRze9keEyTzB6ewmDvjzFGYuG.jpg',
     }
     const response = await request(app.callback()).post('/downloads').send(data).type('json')
     expect(response.status).to.eq(200)
@@ -44,6 +45,7 @@ describe('downloads a series', () => {
       year: '1972',
       blurb: 'string',
       poster: 'https://image.tmdb.org/t/p/original/9BvRze9keEyTzB6ewmDvjzFGYuG.jpg',
+      backdrop: 'https://image.tmdb.org/t/p/original/9BvRze9keEyTzB6ewmDvjzFGYuG.jpg',
     }
     const response = await request(app.callback()).post('/downloads').send(data).type('json')
     expect(response.status).to.eq(200)

@@ -9,6 +9,7 @@
     "lint": "eslint ."
   },
   "devDependencies": {
+    "@types/cron": "^1.7.2",
     "@types/koa": "^2.11.4",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-router": "^7.4.1",
@@ -29,6 +30,7 @@
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",
+    "cron": "^1.8.2",
     "joi": "^17.2.1",
     "joiful": "^2.0.1",
     "koa": "^2.13.0",

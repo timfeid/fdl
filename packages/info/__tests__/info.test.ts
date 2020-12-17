@@ -1,13 +1,12 @@
 import chai, { expect } from 'chai'
-import { getInfo } from '../src/imdb'
-import { search, parseTitle } from '../src/tv'
+import { search, parseTitle, getByImdb } from '../src/themoviedb'
 import chaiSubset from 'chai-subset'
 
 chai.use(chaiSubset)
 
 describe('gets information about movies/shows', () => {
   it('tv from imdb', async () => {
-    const info = await getInfo('tt1986770')
+    const info = await getByImdb('tt1986770')
 
     expect(info).to.not.be.null
     expect(info).to.have.property('type').to.have.property('name').to.eq('series')
@@ -18,7 +17,7 @@ describe('gets information about movies/shows', () => {
   })
 
   it('movie from imdb', async () => {
-    const info = await getInfo('tt0077651')
+    const info = await getByImdb('tt0077651')
 
     expect(info).to.not.be.null
     expect(info).to.have.property('type').to.have.property('name').to.eq('movie')
@@ -26,6 +25,7 @@ describe('gets information about movies/shows', () => {
     expect(info).to.have.property('title').to.eq('Halloween')
     expect(info).to.have.property('blurb').to.be.a('string')
     expect(info).to.have.property('poster').to.be.a('string')
+    expect(info).to.have.property('trailer').to.eq('https://youtu.be/zlgJC-q92t4')
   })
 
   it('search the moviedb', async () => {
@@ -33,9 +33,8 @@ describe('gets information about movies/shows', () => {
 
     expect(results).to.containSubset([
       {
-        originalName: 'Californication',
-        name: 'Californication',
-        firstAirDate: '2007-08-13',
+        title: 'Californication',
+        year: '2007–2014',
       },
     ])
     expect(results[0]).to.have.property('blurb').be.a('string')
@@ -46,14 +45,14 @@ describe('gets information about movies/shows', () => {
 
     expect(results).to.containSubset([
       {
-        name: 'Californication',
-        firstAirDate: '2007-08-13',
-        type: 'series',
+        title: 'Californication',
+        year: '2007–2014',
+        type: {name: 'series'},
       },
       {
-        name: 'King of California',
-        firstAirDate: '2007',
-        type: 'movie',
+        title: 'King of California',
+        year: '2007',
+        type: {name: 'movie'},
       },
     ])
     expect(results[0]).to.have.property('blurb').be.a('string')
@@ -65,10 +64,10 @@ describe('gets information about movies/shows', () => {
     expect(result).to.containSubset({
       type: {name: 'series'},
       title: 'South Park',
-      year: '1997-08-13',
+      year: '1997–2020',
       season: 23,
     })
-    expect(result.episode).to.be.null
+    expect(result.episode).to.be.undefined
     expect(result).to.have.property('blurb').be.a('string')
     expect(result).to.have.property('poster').be.a('string')
   })
@@ -79,9 +78,22 @@ describe('gets information about movies/shows', () => {
     expect(result).to.containSubset({
       type: {name: 'series'},
       title: 'South Park',
-      year: '1997-08-13',
+      year: '1997–2020',
       episode: 10,
       season: 22,
+    })
+    expect(result).to.have.property('blurb').be.a('string')
+    expect(result).to.have.property('poster').be.a('string')
+  })
+
+  it('parses name, season and episode, part 2', async () => {
+    const result = await parseTitle('Saved.By.The.Bell.2020.S01.2160p.STAN.WEB-DL.AAC5.1.H.265-NTb – 27.2 GB')
+
+    expect(result).to.containSubset({
+      type: {name: 'series'},
+      title: 'Saved by the Bell',
+      year: '1989–1993',
+      season: 1,
     })
     expect(result).to.have.property('blurb').be.a('string')
     expect(result).to.have.property('poster').be.a('string')

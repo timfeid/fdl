@@ -1,0 +1,16 @@
+{
+  "name": "@fdl/hdencode",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint .",
+    "extract": "tsnd -r tsconfig-paths/register src"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "rss-parser": "^3.10.0"
+  }
+}

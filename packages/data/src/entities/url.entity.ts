@@ -2,6 +2,7 @@ import { AfterInsert, AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, Joi
 import { BaseEntity } from '../base-entity'
 import { Url as UrlInterface} from '@fdl/types'
 import { Download } from './download.entity'
+import { Downloadable } from './downloadable.entity'
 
 @Entity()
 export class Url extends BaseEntity implements UrlInterface {
@@ -14,4 +15,8 @@ export class Url extends BaseEntity implements UrlInterface {
   @ManyToMany(() => Download)
   @JoinTable()
   download: Download
+
+  @ManyToMany(() => Downloadable)
+  @JoinTable()
+  downloadable: Downloadable
 }

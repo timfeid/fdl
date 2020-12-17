@@ -27,6 +27,7 @@ class DownloadController {
 
     const download = new Download()
     download.poster = value.poster
+    download.backdrop = value.backdrop
     download.blurb = value.blurb
     download.title = value.title
     download.referrer = value.referrer

@@ -14,6 +14,7 @@ describe('receives download links', () => {
       'https://rapidgator.net/file/d62734bd1274fa33c8980f375938eeec/CneelStoy2072pBuRyx6oTV.part1.rar.html',
       'https://rapidgator.net/file/d9d4ba552f5e88591f52d9941dfdb81c/CneelStoy2072pBuRyx6oTV.part2.rar.html',
     ])
+    expect(response).to.have.property('categories').to.containSubset(['2004', '720p', 'Comedy', 'Family'])
   })
 
 })

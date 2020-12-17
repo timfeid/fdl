@@ -1,6 +1,6 @@
 import { BaseEntity as Base, BeforeInsert, BeforeUpdate, Column, Index, PrimaryGeneratedColumn } from 'typeorm'
 
-export class BaseEntity extends Base {
+export abstract class BaseEntity extends Base {
 
   @PrimaryGeneratedColumn()
   public id!: number

@@ -39,13 +39,14 @@ export async function hdencode(url: string) {
       type: 'series',
       // eslint-disable-next-line
       // @ts-ignore
-      urls: [],
+      urls: [] as string[],
       // eslint-disable-next-line
       // @ts-ignore
       imdb: null,
       // eslint-disable-next-line
       // @ts-ignore
       season: undefined,
+      categories: [] as string[],
     }
 
     const blockquotes = document.getElementsByTagName('blockquote')
@@ -82,6 +83,11 @@ export async function hdencode(url: string) {
           break
         }
       }
+    }
+
+    const tags = document.querySelectorAll('.calidad3')
+    for (const tag of tags) {
+      info.categories.push(tag.textContent)
     }
 
     return info

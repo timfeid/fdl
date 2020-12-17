@@ -39,14 +39,24 @@ export interface Extraction {
   started: boolean
 }
 
+export interface Rating {
+  average: number
+  votes: number
+}
+
 export interface InfoResponse {
+  id?: number
   year: string
   title: string
   blurb: string
-  poster: string
+  poster: string | null
+  backdrop: string | null
   season?: number
   episode?: number
   type: Type
+  rating?: Rating
+  airDate?: string
+  trailer?: string | null
 }
 
 export interface IncomingDownload extends InfoResponse {
@@ -88,16 +98,4 @@ export interface SystemInformation {
   mem: si.Systeminformation.MemData,
   network: si.Systeminformation.NetworkStatsData[],
   temp: si.Systeminformation.CpuTemperatureData,
-}
-
-export type SearchResult = {
-  originalName: string
-  name: string
-  popularity: number
-  firstAirDate: string
-  id: number
-  posterPath: string
-  backdropPath: string
-  blurb: string
-  type: 'movie' | 'series'
 }

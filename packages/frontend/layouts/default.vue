@@ -39,6 +39,14 @@
             <v-list-item-title> Add Download </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link nuxt :to="{ name: 'browse' }">
+          <v-list-item-action>
+            <v-icon>mdi-view-list</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title> Browse catalog </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
