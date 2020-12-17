@@ -18,6 +18,7 @@
               chips
               outlined
               small-chips
+              @change="resetPage"
             ></v-combobox>
           </v-col>
           <v-col cols="4" class="pt-0">
@@ -29,6 +30,7 @@
               chips
               outlined
               small-chips
+              @change="resetPage"
             ></v-combobox>
           </v-col>
           <v-col cols="4" class="pt-0">
@@ -40,6 +42,7 @@
               chips
               outlined
               small-chips
+              @change="resetPage"
             ></v-combobox>
           </v-col>
         </v-row>
@@ -54,16 +57,7 @@
             />
           </div>
         </div>
-        <div
-          v-intersect="{
-            handler: increasePage,
-            options: {
-              threshold: [0, 0.5, 1.0],
-            },
-          }"
-        >
-          this is what you need to see to scroll
-        </div>
+        <div v-intersect="increasePage" />
         <!-- <pre>{{ entities }}</pre> -->
       </v-container>
     </v-layout>
@@ -88,7 +82,7 @@ export default class AddIndex extends Vue {
   hasMore = true
 
   async mounted() {
-    this.getEntities()
+    this.resetPage()
     this.tags = (await this.$axios.get('tags')).data
   }
 
@@ -132,32 +126,30 @@ export default class AddIndex extends Vue {
       .sort((a, b) => (a > b ? 1 : -1))
   }
 
-  get tagFilters() {
-    return [...this.filter.years, ...this.filter.qualities, ...this.filter.tags]
-  }
-
   get params() {
     return {
       page: this.page,
-      tagIds: this.tagFilters.map((tag) => tag.id),
+      tagIds: this.filter.tags.map((tag) => tag.id),
+      yearTagIds: this.filter.years.map((tag) => tag.id),
+      qualityTagIds: this.filter.qualities.map((tag) => tag.id),
     }
   }
 
   increasePage = debounce(this.pageIncrease, 1000)
 
   pageIncrease() {
-    console.log('called')
     this.page++
+    this.getEntities()
   }
 
-  @Watch('tagFilters')
   resetPage() {
-    this.page = 1
+    this.increasePage.clear()
+    this.entities = []
     this.hasMore = true
+    this.page = 1
+    this.getEntities()
   }
 
-  @Watch('tagFilters')
-  @Watch('page')
   async getEntities() {
     if (this.hasMore) {
       const data = (
