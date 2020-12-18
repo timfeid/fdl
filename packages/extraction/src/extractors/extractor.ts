@@ -29,7 +29,7 @@ export abstract class Extractor extends EventEmitter {
   }
 
   get deleteAfterDownload(): boolean {
-    return this.deleteAfterDownload
+    return this._deleteAfterDownload
   }
 
   protected abstract async start (downloads: Download[]): Promise<void>

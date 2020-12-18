@@ -353,7 +353,7 @@ export default class AddIndex extends Vue {
     this.step = step
   }
 
-  async getSeasonData() {
+  async getSeasonData(setLoading = true) {
     this.loading = true
     this.seriesInfo = null
     if (
@@ -363,6 +363,9 @@ export default class AddIndex extends Vue {
     ) {
       const results = await this.$axios(`/info/series/${this.selected}/raw`)
       this.seriesInfo = results.data
+    }
+    if (setLoading) {
+      this.loading = false
     }
   }
 
@@ -403,7 +406,7 @@ export default class AddIndex extends Vue {
       this.selected = this.results[0].id
       if (result.data.season) {
         // this.selectedSeason = result.data.season
-        await this.getSeasonData()
+        await this.getSeasonData(false)
 
         const season = this.seriesInfo.seasons.find(
           (s: any) => s.season_number === result.data.season
@@ -453,7 +456,7 @@ export default class AddIndex extends Vue {
     if (!this.seriesInfo) {
       return
     }
-    console.log(this.seriesInfo)
+
     return this.seriesInfo.seasons.find(
       (result: any) => result.id === this.selectedSeason
     )
