@@ -89,7 +89,7 @@ export default async function downloadListener(app: Koa, info: DownloadInfo) {
 
   setTimeout(() => app.emit('update-progress', convertToObject(info, downloads, extractor)), 500)
 
-  if (await getOption('deleteAfterDownload')) {
+  if (await getOption('deleteAfterDownload') && extractor.deleteAfterDownload) {
     deleteFiles(downloads, app)
   }
 

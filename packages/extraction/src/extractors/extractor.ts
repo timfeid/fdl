@@ -9,6 +9,7 @@ export abstract class Extractor extends EventEmitter {
   protected _finalpath: string
   protected _progress = 0
   protected _complete = false
+  protected _deleteAfterDownload = false
   constructor (info: DownloadInfo) {
     super()
     this.info = info
@@ -25,6 +26,10 @@ export abstract class Extractor extends EventEmitter {
 
   get complete (): boolean {
     return this._complete
+  }
+
+  get deleteAfterDownload(): boolean {
+    return this.deleteAfterDownload
   }
 
   protected abstract async start (downloads: Download[]): Promise<void>

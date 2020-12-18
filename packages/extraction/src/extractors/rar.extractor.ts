@@ -6,6 +6,7 @@ import { logger } from '@fdl/logger'
 
 
 export default class RarExtractor extends Extractor {
+  protected _deleteAfterDownload = true
   protected async start (downloads: Download[]): Promise<void> {
     let rarFile = downloads[0]
     if (downloads.length > 0) {
