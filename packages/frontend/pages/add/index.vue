@@ -129,7 +129,8 @@
                           {{ result.title }} &nbsp;
                           <span
                             v-if="
-                              result.type.name === 'movie' && result.firstAirDate
+                              result.type.name === 'movie' &&
+                              result.firstAirDate
                             "
                             v-text="`(${result.firstAirDate})`"
                           />
@@ -493,12 +494,14 @@ export default class AddIndex extends Vue {
   get year() {
     if (this.currentSelectionObj) {
       if (this.selectedEpisodeObj) {
-        return this.selectedEpisodeObj.air_date
+        return this.selectedEpisodeObj.air_date || this.selectedEpisodeObj.year
       }
       if (this.selectedSeasonObj) {
-        return this.selectedSeasonObj.air_date
+        return this.selectedSeasonObj.air_date || this.selectedSeasonObj.year
       }
-      return this.currentSelectionObj.firstAirDate
+      return (
+        this.currentSelectionObj.firstAirDate || this.currentSelectionObj.year
+      )
     }
 
     return ''

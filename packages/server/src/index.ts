@@ -13,6 +13,6 @@ app.on('ready', () => {
   })
   seed()
   getNewRssData()
-  const cron = new CronJob('* 0 * * * *', getNewRssData)
+  const cron = new CronJob('* 6 * * * *', getNewRssData)
   cron.start()
 })

@@ -1,6 +1,7 @@
 import Parser from 'rss-parser'
 import {createConnection, Downloadable, Rss} from '@fdl/data'
 import { createHencodeDownloadable } from './hdencode'
+import moment from 'moment'
 
 const parser = new Parser()
 
@@ -35,7 +36,7 @@ async function createDownloadable(item: any) {
 }
 
 export async function getNewRssData () {
-  console.log('getting rss data')
+  console.log(moment().toISOString(), 'getting rss data')
   const feeds = await Rss.find()
   for (const feed of feeds) {
     const parsed = await parser.parseURL(feed.url)
