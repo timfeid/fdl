@@ -96,9 +96,6 @@ export default class App extends Vue {
     // background-color: #393D40;
   }
 }
-.v-toolbar__title {
-  font-weight: 200;
-}
 
 .toasted-container.top-right {
   top: .25rem !important;
@@ -115,5 +112,11 @@ export default class App extends Vue {
     margin: .5rem .5rem .5rem -.4rem !important;
     font-size: 1.5rem;
   }
+}
+.v-toolbar {
+  &__title {
+    font-weight: 200;
+  }
+  z-index: 3;
 }
 </style>

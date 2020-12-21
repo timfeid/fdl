@@ -1,66 +1,83 @@
 <template>
-  <div>
+  <div class="full-height">
     <v-toolbar flat>
       <v-toolbar-title>
         <v-icon>mdi-view-list</v-icon>
         Browse catalog
       </v-toolbar-title>
     </v-toolbar>
-    <v-layout class="align-baseline ma-3">
-      <v-container class="fill-height" fluid>
-        <v-row class="filters">
-          <v-col cols="4" class="pt-0">
+
+    <div
+      class="d-flex"
+      :class="{ 'flex-column': $vuetify.breakpoint.mdAndDown }"
+    >
+      <component
+        :is="$vuetify.breakpoint.lgAndUp ? 'v-navigation-drawer' : 'div'"
+        class="filter-nav-bar"
+        fixed
+        floating
+        clipped
+        style="left: 256px; top: 0"
+        color="transparent"
+        width="320"
+      >
+        <div class="filters">
+          <div class="filters-header" />
+          <div class="filters-content">
+            <!-- <h3>Filters</h3> -->
+            <v-text-field
+              v-model="search"
+              label="Search"
+              prepend-icon="mdi-magnify"
+              @input="delayedSearch"
+            ></v-text-field>
             <v-combobox
               v-model="filter.qualities"
               :items="qualities"
+              prepend-icon="mdi-equalizer"
               label="Filter by quality"
               multiple
               chips
-              outlined
               small-chips
               @change="resetPage"
             ></v-combobox>
-          </v-col>
-          <v-col cols="4" class="pt-0">
             <v-combobox
               v-model="filter.years"
               :items="years"
               label="Filter by year"
               multiple
               chips
-              outlined
+              prepend-icon="mdi-calendar-today"
               small-chips
               @change="resetPage"
             ></v-combobox>
-          </v-col>
-          <v-col cols="4" class="pt-0">
             <v-combobox
               v-model="filter.tags"
               :items="filterableTags"
               label="Filter by tag"
               multiple
               chips
-              outlined
+              prepend-icon="mdi-label"
               small-chips
               @change="resetPage"
             ></v-combobox>
-          </v-col>
-        </v-row>
-        <div style="display: block; width: 100%">
-          <div
-            :style="`display: grid; grid-template-columns: repeat(auto-fill, minmax(${width}px, 1fr)); grid-row-gap: 24px; grid-column-gap: ${gap}px`"
-          >
-            <entity
-              v-for="entity in entities"
-              :key="`entity-${entity.id}`"
-              :entity="entity"
-            />
           </div>
         </div>
-        <div v-intersect="increasePage" />
-        <!-- <pre>{{ entities }}</pre> -->
-      </v-container>
-    </v-layout>
+      </component>
+      <div class="browse-items" :style="`margin: ${gap}px`">
+        <div
+          :style="`display: grid; grid-template-columns: repeat(auto-fill, minmax(${width}px, 1fr)); grid-row-gap: 24px; grid-column-gap: ${gap}px`"
+        >
+          <entity
+            v-for="entity in entities"
+            :key="`entity-${entity.id}`"
+            :entity="entity"
+          />
+        </div>
+      </div>
+
+      <!-- <pre>{{ entities }}</pre> -->
+    </div>
   </div>
 </template>
 
@@ -80,10 +97,22 @@ export default class AddIndex extends Vue {
 
   page = 1
   hasMore = true
+  search = ''
 
   async mounted() {
     this.resetPage()
+    window.addEventListener('scroll', this.infiniteScroll)
     this.tags = (await this.$axios.get('tags')).data
+  }
+
+  infiniteScroll() {
+    const scrollY = window.scrollY
+    const visible = document.documentElement.clientHeight
+    const pageHeight = document.documentElement.scrollHeight
+    const bottomOfPage = visible + scrollY >= pageHeight
+    if (bottomOfPage || pageHeight < visible) {
+      this.increasePage()
+    }
   }
 
   get width() {
@@ -128,6 +157,7 @@ export default class AddIndex extends Vue {
 
   get params() {
     return {
+      search: this.search,
       page: this.page,
       tagIds: this.filter.tags.map((tag) => tag.id),
       yearTagIds: this.filter.years.map((tag) => tag.id),
@@ -135,7 +165,9 @@ export default class AddIndex extends Vue {
     }
   }
 
-  increasePage = debounce(this.pageIncrease, 1000)
+  increasePage = debounce(this.pageIncrease, 750)
+
+  delayedSearch = debounce(this.resetPage, 500)
 
   pageIncrease() {
     this.page++
@@ -157,7 +189,7 @@ export default class AddIndex extends Vue {
           params: this.params,
         })
       ).data
-      this.hasMore = data.length > 0
+      this.hasMore = data.length === 15
 
       this.entities = [...this.entities, ...data]
     }
@@ -166,9 +198,43 @@ export default class AddIndex extends Vue {
 </script>
 
 <style lang="scss">
+@import '~vuetify/src/styles/settings/_variables';
 .filters {
+  @media #{map-get($display-breakpoints, 'md-and-down')} {
+    width: 100% !important;
+    display: flex;
+  }
   .v-text-field__details {
     display: none;
+  }
+  &-header {
+    height: 64px;
+  }
+  &-content {
+    padding: 1rem;
+    width: 100%;
+  }
+  // position: fixed;
+  // right: 0;
+  // top: 0;
+  // width: 320px;
+  // background: white;
+}
+
+.browse-items {
+  @media #{map-get($display-breakpoints, 'lg-and-up')} {
+    width: calc(100% - 320px);
+    margin-left: 344px !important;
+  }
+}
+
+.filter-nav-bar {
+  align-self: flex-start;
+  height: 100%;
+  z-index: 1;
+  @media #{map-get($display-breakpoints, 'md-and-down')} {
+    width: 100% !important;
+    align-self: stretch;
   }
 }
 </style>

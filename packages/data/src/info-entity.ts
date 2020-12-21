@@ -1,4 +1,4 @@
-import { Column, JoinTable, ManyToMany, ManyToOne } from 'typeorm'
+import { Column, Index, JoinTable, ManyToMany, ManyToOne } from 'typeorm'
 import { DownloadInfo, Step } from '@fdl/types'
 import { BaseEntity } from './base-entity'
 import { Url } from './entities/url.entity'
@@ -8,6 +8,7 @@ export abstract class InfoEntity extends BaseEntity {
   @Column()
   year: string
 
+  @Index()
   @Column()
   title: string
 

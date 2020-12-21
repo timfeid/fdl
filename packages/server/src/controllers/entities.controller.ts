@@ -9,6 +9,7 @@ class DownloadablesController {
   public async list (ctx: Context) {
     const query = Entity.createQueryBuilder('entities')
     const page = ctx.request.query.page
+    const search = ctx.request.query.search
     let tagIds = ctx.request.query['tagIds[]']
     let yearTagIds = ctx.request.query['yearTagIds[]']
     let qualityTagIds = ctx.request.query['qualityTagIds[]']
@@ -36,6 +37,10 @@ class DownloadablesController {
     if (qualityTagIds) {
       query.innerJoin('entities.tags', 'filteredQualityTags')
       query.andWhere('filteredQualityTags.id in (:...qualityTagIds)', {qualityTagIds: qualityTagIds})
+    }
+
+    if (search) {
+      query.andWhere('entities.title like :search', {search: `%${search}%`})
     }
 
     query.orderBy('entities.createdAt', 'DESC')
