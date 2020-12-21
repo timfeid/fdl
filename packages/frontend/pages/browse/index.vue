@@ -11,24 +11,15 @@
       class="d-flex"
       :class="{ 'flex-column': $vuetify.breakpoint.mdAndDown }"
     >
-      <component
-        :is="$vuetify.breakpoint.lgAndUp ? 'v-navigation-drawer' : 'div'"
-        class="filter-nav-bar"
-        fixed
-        floating
-        clipped
-        style="left: 256px; top: 0"
-        color="transparent"
-        width="320"
-      >
+      <div class="filter-nav-bar">
         <div class="filters">
-          <div class="filters-header" />
           <div class="filters-content">
             <!-- <h3>Filters</h3> -->
             <v-text-field
               v-model="search"
               label="Search"
               prepend-icon="mdi-magnify"
+              dense
               @input="delayedSearch"
             ></v-text-field>
             <v-combobox
@@ -63,7 +54,7 @@
             ></v-combobox>
           </div>
         </div>
-      </component>
+      </div>
       <div class="browse-items" :style="`margin: ${gap}px`">
         <div
           :style="`display: grid; grid-template-columns: repeat(auto-fill, minmax(${width}px, 1fr)); grid-row-gap: 24px; grid-column-gap: ${gap}px`"
@@ -207,9 +198,6 @@ export default class AddIndex extends Vue {
   .v-text-field__details {
     display: none;
   }
-  &-header {
-    height: 64px;
-  }
   &-content {
     padding: 1rem;
     width: 100%;
@@ -232,9 +220,14 @@ export default class AddIndex extends Vue {
   align-self: flex-start;
   height: 100%;
   z-index: 1;
+  position: fixed;
+  left: 256px;
+  width: 320px;
+  height: 100%;
   @media #{map-get($display-breakpoints, 'md-and-down')} {
     width: 100% !important;
     align-self: stretch;
+    position: static;
   }
 }
 </style>
