@@ -173,7 +173,7 @@ export default class EntityComponent extends Vue {
       icon: 'progress-download',
       duration: 6000,
     })
-    this.$router.replace('/')
+    // this.$router.replace('/')
   }
 }
 </script>

@@ -177,7 +177,6 @@ export class Download extends EventEmitter {
 
   private async getHeaders () {
     logger.verbose(`Getting headers for ${this.originalUrl}`)
-    await new Promise(resolve => setTimeout(resolve, 500000))
     try {
 
       return await axios({
