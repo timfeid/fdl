@@ -136,10 +136,14 @@ class DownloadPart extends EventEmitter {
     this.lastReceivedData = Date.now()
   }
 
+  cancel (reason: string) {
+    this.cancelToken.cancel(reason)
+  }
+
   livenessCheck () {
     if (Date.now() - this.lastReceivedData > 30000) {
       logger.debug(`${this.part.file} may have stalled, restarting.`)
-      this.cancelToken.cancel('Restarting due to inactivity.')
+      this.cancel('Restarting due to inactivity')
       this.download()
     }
     clearTimeout(this.livenessCheckTimeout)
@@ -152,6 +156,7 @@ class Part extends EventEmitter {
   partNumber: number
   equalBytes: number
   file: string
+  downloader: DownloadPart
   downloaded = 0
   constructor (parts: Parts, partNumber: number, tempName: string) {
     super()
@@ -201,10 +206,16 @@ class Part extends EventEmitter {
 
 
   download () {
-    const downloader = new DownloadPart(this)
-    downloader.on('complete', this.completed.bind(this))
-    downloader.on('progress', this.progress.bind(this))
-    downloader.download()
+    this.downloader = new DownloadPart(this)
+    this.downloader.on('complete', this.completed.bind(this))
+    this.downloader.on('progress', this.progress.bind(this))
+    this.downloader.download()
+  }
+
+  cancel (reason = 'Cancelled') {
+    if (this.downloader) {
+      this.downloader.cancel(reason)
+    }
   }
 }
 
@@ -241,6 +252,11 @@ export default class Parts extends Driver {
     }
     await this.joinParts()
     await this.destroyParts()
+  }
+
+  cancel (reason = 'Cancelled') {
+    this.parts.forEach(part => part.cancel(reason))
+    return true
   }
 
   private createParts () {

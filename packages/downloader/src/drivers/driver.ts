@@ -9,6 +9,7 @@ export abstract class Driver {
   }
 
   abstract async start (): Promise<void>
+  abstract cancel (): boolean
 
   toObject () {
     return {}

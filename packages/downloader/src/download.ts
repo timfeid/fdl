@@ -25,6 +25,8 @@ export class Download extends EventEmitter {
   private previousTotal = 0
   private retryCount = 0
   private _completed = false
+  private retryAfter: number
+  private retryTimeout: NodeJS.Timeout
 
   public get originalUrl () {
     return this.url
@@ -71,20 +73,41 @@ export class Download extends EventEmitter {
   }
 
   restart () {
+    clearTimeout(this.retryTimeout)
+
     if (this.retryCount++ !== this.MAX_RETRIES) {
-      logger.info('Restarting in', this.RETRY_DELAY, 'seconds')
+      logger.info(`Restarting in ${this.RETRY_DELAY} seconds`)
 
       setTimeout(() => this.start(), this.RETRY_DELAY * 1000)
     }
   }
 
+  checkForRestart () {
+    let restarted = false
+    if (this.retryAfter < Date.now()) {
+      this.restart()
+      restarted = true
+      logger.info('We are restarting due to header or transform url timeout')
+    }
+    if (!this._completed && !restarted) {
+      this.retryTimeout = setTimeout(this.checkForRestart.bind(this), 30000)
+    }
+  }
+
+  changed () {
+    this.retryAfter = Date.now() + 25000
+  }
+
   async start () {
     this._started = true
+    this.changed()
+    this.checkForRestart()
     if (this.retryCount > 0) {
       logger.info(`Retry #${this.retryCount}`)
     }
     try {
       this._finalUrl = await this.site.transformUrl(this.url)
+      this.changed()
     } catch (e) {
       console.error(e)
       return this.restart()
@@ -92,6 +115,8 @@ export class Download extends EventEmitter {
 
     try {
       const response = await this.getHeaders()
+      // we made it to the download portion which has its own retry policy
+      clearTimeout(this.retryTimeout)
 
       this._filepath = this.determineFilepath(this.determineFilename(response.headers))
       this._contentLength = parseInt(response.headers['content-length'], 10)
@@ -101,6 +126,7 @@ export class Download extends EventEmitter {
       if (filesize !== this._contentLength) {
         this.driver = matchDriver(this, response)
         logger.verbose('matched driver')
+        this.changed()
         await this.driver.start()
       }
       this.complete()
@@ -136,6 +162,8 @@ export class Download extends EventEmitter {
   }
 
   public progress(chunkLength: number) {
+    this.changed()
+
     this._downloaded += chunkLength
     if (this.totalProgress !== this.previousTotal || this.downloaded === this.contentLength) {
       this.previousTotal = this.totalProgress
@@ -149,6 +177,7 @@ export class Download extends EventEmitter {
 
   private async getHeaders () {
     logger.verbose(`Getting headers for ${this.originalUrl}`)
+    await new Promise(resolve => setTimeout(resolve, 500000))
     try {
 
       return await axios({
