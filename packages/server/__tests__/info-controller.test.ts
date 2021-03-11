@@ -1,7 +1,7 @@
-import {app} from '../src/app'
 import chai, { expect } from 'chai'
-import request from 'supertest'
 import ss from 'chai-subset'
+import request from 'supertest'
+import { app } from '../src/app'
 chai.use(ss)
 
 describe('info controller', () => {
@@ -93,12 +93,12 @@ describe('info controller', () => {
 
 
   it('get movie info from an hdencode link', async () => {
-    const url = encodeURIComponent('https://hdencode.com/the-crazies-2010-1080p-bluray-dd5-1-x264-dirty-8-8-gb/')
+    const url = encodeURIComponent('https://hdencode.org/the-crazies-2010-1080p-bluray-dd5-1-x264-dirty-8-8-gb/')
 
     const response = await request(app.callback()).get(`/info/from-link?url=${url}`).type('json')
     expect(response.status).to.eq(200)
     expect(response.body).to.containSubset({
-      url: 'https://hdencode.com/the-crazies-2010-1080p-bluray-dd5-1-x264-dirty-8-8-gb/#unlocked',
+      url: 'https://hdencode.org/the-crazies-2010-1080p-bluray-dd5-1-x264-dirty-8-8-gb/#unlocked',
       name: 'The.Crazies.2010.1080p.BluRay.DD5.1.x264-DiRTY – 8.8 GB',
       type: 'movie',
       urls: [
@@ -116,12 +116,12 @@ describe('info controller', () => {
 
 
   it('get episode info from an hdencode link', async () => {
-    const url = encodeURIComponent('https://hdencode.com/young-sheldon-s04e03-training-wheels-and-an-unleashed-chicken-1080p-amzn-web-dl-ddp5-1-h-264-tommy-1-0-gb/')
+    const url = encodeURIComponent('https://hdencode.org/young-sheldon-s04e03-training-wheels-and-an-unleashed-chicken-1080p-amzn-web-dl-ddp5-1-h-264-tommy-1-0-gb/')
 
     const response = await request(app.callback()).get(`/info/from-link?url=${url}`).type('json')
     expect(response.status).to.eq(200)
     expect(response.body).to.containSubset({
-      url: 'https://hdencode.com/young-sheldon-s04e03-training-wheels-and-an-unleashed-chicken-1080p-amzn-web-dl-ddp5-1-h-264-tommy-1-0-gb/#unlocked',
+      url: 'https://hdencode.org/young-sheldon-s04e03-training-wheels-and-an-unleashed-chicken-1080p-amzn-web-dl-ddp5-1-h-264-tommy-1-0-gb/#unlocked',
       name: 'Young.Sheldon.S04E03.Training.Wheels.and.an.Unleashed.Chicken.1080p.AMZN.WEB-DL.DDP5.1.H.264-TOMMY – 1.0 GB',
       type: 'series',
       urls: [
@@ -139,12 +139,12 @@ describe('info controller', () => {
 
 
   it('get tv pack info from an hdencode link', async () => {
-    const url = encodeURIComponent('https://hdencode.com/voices-of-fire-s01-1080p-nf-web-dl-ddp5-1-h-264-ntb-11-1-gb/')
+    const url = encodeURIComponent('https://hdencode.org/voices-of-fire-s01-1080p-nf-web-dl-ddp5-1-h-264-ntb-11-1-gb/')
 
     const response = await request(app.callback()).get(`/info/from-link?url=${url}`).type('json')
     expect(response.status).to.eq(200)
     expect(response.body).to.containSubset({
-      url: 'https://hdencode.com/voices-of-fire-s01-1080p-nf-web-dl-ddp5-1-h-264-ntb-11-1-gb/#unlocked',
+      url: 'https://hdencode.org/voices-of-fire-s01-1080p-nf-web-dl-ddp5-1-h-264-ntb-11-1-gb/#unlocked',
       name: 'Voices.of.Fire.S01.1080p.NF.WEB-DL.DDP5.1.H.264-NTb – 11.1 GB',
       type: 'series',
       urls: [

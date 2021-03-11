@@ -1,18 +1,18 @@
-import Parser from 'rss-parser'
-import {createConnection, Downloadable, Rss} from '@fdl/data'
-import { createHencodeDownloadable } from './hdencode'
+import { createConnection, Rss } from '@fdl/data'
 import moment from 'moment'
+import Parser from 'rss-parser'
+import { createHencodeDownloadable } from './hdencode'
 
 const parser = new Parser()
 
 const feeds = [
   {
     name: 'HD Encode - TV shows',
-    url: 'https://hdencode.com/tag/tv-shows/feed/',
+    url: 'https://hdencode.org/tag/tv-shows/feed/',
   },
   {
     name: 'HD Encode - Movies',
-    url: 'https://hdencode.com/tag/movies/feed/',
+    url: 'https://hdencode.org/tag/movies/feed/',
   },
 ]
 
@@ -30,7 +30,7 @@ export async function seed () {
 }
 
 async function createDownloadable(item: any) {
-  if (item.link.includes('hdencode.com')) {
+  if (item.link.includes('hdencode.org')) {
     return await createHencodeDownloadable(item)
   }
 }

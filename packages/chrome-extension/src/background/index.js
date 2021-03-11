@@ -26,7 +26,7 @@ function sendTabTo(respond) {
       currentWindow: true,
     },
     ([tab]) => {
-      if (tab.url.includes('hdencode.com')) {
+      if (tab.url.includes('hdencode.org')) {
         parseTab(tab).then(respond)
       } else if (tab.url.includes('mtv.com')) {
         // parseMtvTab(tab).then(respond)

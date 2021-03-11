@@ -5,7 +5,7 @@ chai.use(ss)
 
 describe('receives download links', () => {
   it('Cinderella story', async () => {
-    const response = await hdencode('https://hdencode.com/a-cinderella-story-2004-720p-bluray-x264-nortv-4-4-gb/')
+    const response = await hdencode('https://hdencode.org/a-cinderella-story-2004-720p-bluray-x264-nortv-4-4-gb/')
 
     expect(response).to.have.property('imdb').eq('tt0356470')
     expect(response).to.have.property('type').eq('movie')
