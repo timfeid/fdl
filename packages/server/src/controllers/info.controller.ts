@@ -1,9 +1,7 @@
-import { Context } from 'koa'
-import joi from 'joi'
-import { app } from '../app'
-import { Download, Type, Url } from '@fdl/data'
 import { InfoService } from '@fdl/info'
 import { hdencode } from '@fdl/link-grabber'
+import joi from 'joi'
+import { Context } from 'koa'
 
 class InfoController {
   public async tvShows (ctx: Context) {
@@ -56,7 +54,7 @@ class InfoController {
     const {error, value} = validation.validate(ctx.request.query)
     ctx.assert(!error, 400, JSON.stringify({error}))
 
-    if (/hdencode\.com/.test(value.url)) {
+    if (/hdencode\.org/.test(value.url)) {
       let info = await hdencode(value.url) as any
 
       if (info.imdb) {

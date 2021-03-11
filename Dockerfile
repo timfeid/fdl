@@ -1,6 +1,6 @@
 FROM alpine
 
-RUN apk add --update --no-cache nodejs yarn unrar python ffmpeg bash \
+RUN apk add --update --no-cache nodejs yarn unrar python2 ffmpeg bash gcc g++ make  \
     udev \
     ttf-freefont \
     chromium
