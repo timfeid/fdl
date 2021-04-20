@@ -1,16 +1,16 @@
-import { Validator, Driver } from './driver'
-import axios, { AxiosPromise, AxiosResponse, CancelTokenSource } from 'axios'
-import fs from 'fs'
+import { config } from '@fdl/config'
+import { logger } from '@fdl/logger'
+import axios, { AxiosResponse, CancelTokenSource } from 'axios'
 import { EventEmitter } from 'events'
-import path from 'path'
+import fs from 'fs'
+import md5 from 'md5'
 // eslint-disable-next-line
 // @ts-ignore
 import Multistream from 'multistream'
-import { config } from '@fdl/config'
-import { Download } from '../download'
-import md5 from 'md5'
+import path from 'path'
 import { Stream } from 'stream'
-import { logger } from '@fdl/logger'
+import { Download } from '../download'
+import { Driver, Validator } from './driver'
 
 const TOTAL_PARTS = 8
 
@@ -43,7 +43,7 @@ class DownloadPart extends EventEmitter {
   constructor (part: Part) {
     super()
     this.part = part
-    console.log('created part', part.file, part.partNumber)
+    logger.verbose(`created part ${part.file}, ${part.partNumber}`)
   }
 
   async download () {
@@ -54,7 +54,6 @@ class DownloadPart extends EventEmitter {
 
     if (filesize > 0) {
       logger.debug('we are continuing a download')
-      console.log('FILESIZE', filesize, filesize+this.part.from, this.part.contentLength)
       this.emit('progress', filesize)
     }
 
@@ -118,7 +117,7 @@ class DownloadPart extends EventEmitter {
     const filesize = fs.existsSync(this.part.file) ? fs.statSync(this.part.file).size : 0
     // keep the timeout going if we're not at the correct size
     if (filesize === this.part.contentLength) {
-      console.log('completed')
+      logger.verbose('completed')
       clearTimeout(this.livenessCheckTimeout)
       if (!this.isComplete) {
         this.isComplete = true
@@ -130,6 +129,7 @@ class DownloadPart extends EventEmitter {
   progress (chunk: Buffer) {
     this.gotData()
     this.emit('progress', chunk)
+    logger.verbose(`${this.part.file} is ${Math.round(this.part.downloaded / this.part.contentLength * 100)}% complete`)
   }
 
   gotData () {
@@ -141,13 +141,13 @@ class DownloadPart extends EventEmitter {
   }
 
   livenessCheck () {
-    if (Date.now() - this.lastReceivedData > 30000) {
+    if (Date.now() - this.lastReceivedData > 5000) {
       logger.debug(`${this.part.file} may have stalled, restarting.`)
       this.cancel('Restarting due to inactivity')
       this.download()
     }
     clearTimeout(this.livenessCheckTimeout)
-    this.livenessCheckTimeout = setTimeout(this.livenessCheck.bind(this), 30000)
+    this.livenessCheckTimeout = setTimeout(this.livenessCheck.bind(this), 5000)
   }
 }
 
@@ -164,7 +164,6 @@ class Part extends EventEmitter {
     this.partNumber = partNumber
     this.equalBytes = Math.floor(parts.download.contentLength / TOTAL_PARTS)
     this.file = path.join(config.tempPath, `${tempName}.part.${this.partNumber+1}`)
-    console.log(this.file, this.equalBytes, this.from, this.to, this.contentLength)
   }
 
   get contentLength () {
@@ -228,7 +227,7 @@ export default class Parts extends Driver {
   constructor (download: Download) {
     super(download)
     this.tempName = md5(download.originalUrl).substr(0, 10)
-    console.log('parts driver initiated for', download.originalUrl)
+    logger.verbose(`parts driver initiated for ${download.originalUrl}`)
   }
 
   async start () {
