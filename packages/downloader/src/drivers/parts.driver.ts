@@ -40,6 +40,7 @@ class DownloadPart extends EventEmitter {
   lastReceivedData = Date.now()
   livenessCheckTimeout: NodeJS.Timeout
   isComplete = false
+  last = 0
   constructor (part: Part) {
     super()
     this.part = part
@@ -129,7 +130,11 @@ class DownloadPart extends EventEmitter {
   progress (chunk: Buffer) {
     this.gotData()
     this.emit('progress', chunk)
-    logger.verbose(`${this.part.file} is ${Math.round(this.part.downloaded / this.part.contentLength * 100)}% complete`)
+    const p = Math.round(this.part.downloaded / this.part.contentLength * 100)
+    if (p !== this.last) {
+      this.last = p
+      logger.verbose(`${this.part.file} is ${p}% complete`)
+    }
   }
 
   gotData () {
