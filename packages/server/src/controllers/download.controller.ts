@@ -5,7 +5,7 @@ import { Download, Type, Url } from '@fdl/data'
 
 class DownloadController {
   public async list (ctx: Context) {
-    ctx.body = await Download.find({order: {createdAt: 'DESC'}})
+    ctx.body = await Download.find({order: {createdAt: 'DESC'}, take: 100})
   }
 
   public async download (ctx: Context) {
