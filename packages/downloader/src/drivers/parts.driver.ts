@@ -109,9 +109,8 @@ class DownloadPart extends EventEmitter {
 
   error (e: any) {
     logger.error(e)
-    if (e.response && e.response.status === 404) {
-      clearTimeout(this.livenessCheckTimeout)
-    }
+    clearTimeout(this.livenessCheckTimeout)
+    this.part.parts.download.restart()
   }
 
   completed () {
@@ -133,7 +132,9 @@ class DownloadPart extends EventEmitter {
     const p = Math.round(this.part.downloaded / this.part.contentLength * 100)
     if (p !== this.last) {
       this.last = p
-      logger.verbose(`${this.part.file} is ${p}% complete`)
+      if (p % 25 === 0) {
+        logger.verbose(`${this.part.file} is ${p}% complete`)
+      }
     }
   }
 
@@ -142,17 +143,19 @@ class DownloadPart extends EventEmitter {
   }
 
   cancel (reason: string) {
-    this.cancelToken.cancel(reason)
+    if (this.cancelToken) {
+      this.cancelToken.cancel(reason)
+    }
   }
 
   livenessCheck () {
-    if (Date.now() - this.lastReceivedData > 5000) {
+    if (Date.now() - this.lastReceivedData > 30000) {
       logger.debug(`${this.part.file} may have stalled, restarting.`)
       this.cancel('Restarting due to inactivity')
       this.download()
     }
     clearTimeout(this.livenessCheckTimeout)
-    this.livenessCheckTimeout = setTimeout(this.livenessCheck.bind(this), 5000)
+    this.livenessCheckTimeout = setTimeout(this.livenessCheck.bind(this), 30000)
   }
 }
 

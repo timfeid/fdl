@@ -8,7 +8,7 @@ export abstract class Driver {
     this.download = download
   }
 
-  abstract async start (): Promise<void>
+  abstract start (): Promise<void>
   abstract cancel (): boolean
 
   toObject () {
