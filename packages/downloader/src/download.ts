@@ -11,7 +11,7 @@ import {logger} from '@fdl/logger'
 import fs from 'fs'
 
 export class Download extends EventEmitter {
-  readonly MAX_RETRIES = 5
+  readonly MAX_RETRIES = 3
   readonly RETRY_DELAY = 30
   private url: string
   private _finalUrl?: string

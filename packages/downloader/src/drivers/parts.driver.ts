@@ -213,6 +213,7 @@ class Part extends EventEmitter {
 
 
   download () {
+    this.downloaded = 0
     this.downloader = new DownloadPart(this)
     this.downloader.on('complete', this.completed.bind(this))
     this.downloader.on('progress', this.progress.bind(this))
@@ -220,6 +221,7 @@ class Part extends EventEmitter {
   }
 
   cancel (reason = 'Cancelled') {
+    this.downloaded = 0
     if (this.downloader) {
       this.downloader.cancel(reason)
     }
