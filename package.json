@@ -1,0 +1,17 @@
+{
+  "name": "fdl",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "monorepo": {
+    "public": false,
+    "internalPackages": true,
+    "scope": "@fdl"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "packageManager": "yarn@3.1.0"
+}

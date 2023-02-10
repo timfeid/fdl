@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;1,400');
+
+html {
+  @apply antialiased;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+  font-feature-settings: 'liga' off;
+  font-weight: 400;
+  color: theme('colors.slate.900');
+  background-color: theme('colors.slate.100');
+}
+
+svg {
+  fill: currentColor;
+}
+
+.gridjs-th {
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: -.5px;
+  font-size: 1rem;
+  color: theme('colors.gray.500');
+  border-bottom: 1px dashed theme('colors.slate.200');
+}
+
+.gridjs-td {
+  border-bottom: 1px dashed theme('colors.slate.200');
+  color: theme('colors.gray.700');
+  a {
+    color: theme('colors.gray.900');
+    font-weight: 500;
+    &:hover {
+      color: theme('colors.blue.500');
+    }
+  }
+}
+
+.gridjs-tr {
+  &:last-child {
+    .gridjs-td {
+      border-bottom: 0;
+    }
+  }
+}
+
+.gridjs-th,
+.gridjs-td {
+  text-align: left;
+  padding: 1rem;
+}
+
+.shadow {
+  box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.02);
+}

@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator provider {
+  provider = "prisma-client-js"
+}
+
+model Downloadable {
+  id       String @id
+  referrer String
+  mediaId  String @map("media_id")
+  title    String
+  season   Int?
+  episode  Int?
+
+  media Media             @relation(fields: [mediaId], references: [id])
+  urls DownloadableUrl[]
+
+  @@map("downloadables")
+}
+
+model DownloadableUrl {
+  id             String @id
+  downloadableId String @map("downloadable_id")
+  url            String
+
+  downloadable Downloadable @relation(fields: [downloadableId], references: [id])
+
+  @@map("downloadable_urls")
+}
+
+model Genre {
+  id   String @id
+  name String @unique
+
+  movies GenreMedia[]
+
+  @@map("genres")
+}
+
+model GenreMedia {
+  genreId String @map("genre_id")
+  mediaId String @map("media_id")
+
+  genre Genre @relation(fields: [genreId], references: [id])
+  media Media @relation(fields: [mediaId], references: [id])
+
+  @@id([genreId, mediaId])
+  @@map("genre_movie")
+}
+
+enum MediaType {
+  SERIES
+  MOVIE
+}
+
+model Media {
+  id                    String    @id
+  imdbId                String    @unique @map("imdb_id")
+  tmdbId                Int       @map("tmdb_id")
+  type                  MediaType
+  date                  String
+  slug                  String
+  title                 String
+  originalLanguage      String @map("original_language")
+  trailer               String?
+  poster                String
+  tagline               String?
+  backdrop              String?
+  blurb                 String?
+  audienceRatingVotes   Int? @map("audience_rating_votes")
+  audienceRatingAverage Float? @map("audience_rating_average")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  genres        GenreMedia[]
+  downloadables Downloadable[]
+
+  @@unique([tmdbId, type])
+  @@unique([slug, type])
+  @@map("media")
+}
+
+model User {
+  id        String    @id
+  username  String    @map("first_name")
+  email     String?   @unique
+  password  String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  tokens Token[]
+
+  @@map("users")
+}
+
+model Token {
+  token     String   @id
+  userId    String   @map("user_id")
+  type      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: id)
+
+  @@unique([token, userId, type])
+  @@index([type, userId])
+  @@map("tokens")
+}
