@@ -1,5 +1,5 @@
 import { Components, Mailable } from '@tellimer/mailable'
-import { Token } from '@prisma/client'
+import { Token } from '@fdl/data'
 import React from 'react'
 
 const { Email, EmailRow, EmailCol, EmailTable } = Components

@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client'
+import { PrismaClient, User } from '@fdl/data'
 import { Context } from 'koa'
 import { Service } from 'typedi'
 import { JWTService } from '../jwt/jwt.service'

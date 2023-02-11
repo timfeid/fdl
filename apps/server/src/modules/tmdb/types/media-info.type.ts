@@ -1,4 +1,4 @@
-import { MediaType } from "@prisma/client"
+import { MediaType } from '@fdl/data'
 
 export interface Rating {
   average: number

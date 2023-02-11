@@ -1,0 +1,30 @@
+{
+  "name": "@fdl/ingest",
+  "packageManager": "yarn@3.1.0",
+  "scripts": {
+    "build": "node esbuild.js",
+    "start": "test -f dist/server.js && node dist/ingest.js",
+    "dev": "tsnd --transpile-only src/ingest.ts",
+    "lint": "eslint ./src"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.18.6",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.48.1",
+    "eslint": "^8.0.1",
+    "eslint-config-standard-with-typescript": "latest",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.0.0",
+    "reflect-metadata": "^0.1.13",
+    "ts-node-dev": "^2.0.0",
+    "typedi": "^0.10.0",
+    "typescript": "*"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "puppeteer": "^19.6.3",
+    "rss-parser": "^3.12.0"
+  }
+}

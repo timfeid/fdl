@@ -1,4 +1,4 @@
-import { Downloadable, Media, MediaType } from '@prisma/client'
+import { Downloadable, Media, MediaType } from '@fdl/data'
 import { Service } from 'typedi'
 import { ConfigService } from '../config/config.service'
 import path from 'path'

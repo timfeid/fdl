@@ -1,4 +1,4 @@
-import { Downloadable, DownloadableUrl, Media } from '@prisma/client'
+import { Downloadable, DownloadableUrl, Media } from '@fdl/data'
 import EventEmitter from 'events'
 import fs from 'fs'
 import { ConfigService } from '../config/config.service'

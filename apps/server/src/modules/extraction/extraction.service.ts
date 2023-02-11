@@ -1,4 +1,4 @@
-import { Downloadable, DownloadableUrl, Media } from '@prisma/client'
+import { Downloadable, DownloadableUrl, Media } from '@fdl/data'
 import { Service } from 'typedi'
 import { DirectoryService } from '../directory/directory.service'
 import { ExtractorFactory } from './extraction.factory'

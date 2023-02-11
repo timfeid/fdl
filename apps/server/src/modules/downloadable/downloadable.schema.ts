@@ -5,7 +5,7 @@ import { CreateMediaArgs } from '../media/media.schema'
 export class Downloadable {}
 
 @ArgsType()
-export class CreateDownloadableArgs extends CreateMediaArgs {
+export class CreateDownloadableArgs {
   @Field(() => Int, { nullable: true })
   season?: number
 
@@ -20,4 +20,8 @@ export class CreateDownloadableArgs extends CreateMediaArgs {
 
   @Field()
   referrer: string
+
+  mediaId: string
+
+  guid?: string
 }

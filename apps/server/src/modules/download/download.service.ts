@@ -1,5 +1,5 @@
 import { Download } from '@fdl/downloader'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@fdl/data'
 import { Service } from 'typedi'
 import { DirectoryService } from '../directory/directory.service'
 import { ExtractionService } from '../extraction/extraction.service'

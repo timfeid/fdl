@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import dotenv from 'dotenv'
 import Container from 'typedi'
-import { prisma, PrismaClient } from '@prisma/client'
+import { prisma, PrismaClient } from '@fdl/data'
 import { clientDetails, defaultContextGrabber, getTestClient } from './test-client'
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended'
 import { join } from 'path'

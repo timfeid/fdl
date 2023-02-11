@@ -1,0 +1,11 @@
+{
+  "name": "@fdl/data",
+  "packageManager": "yarn@3.1.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@prisma/client": "latest"
+  },
+  "devDependencies": {
+    "prisma": "^4.10.1"
+  }
+}

@@ -1,4 +1,4 @@
-import PrismaClient from '@prisma/client'
+import PrismaClient from '@fdl/data'
 import { Service } from 'typedi'
 import { EmailService } from '../email/email.service'
 import { TokenService } from '../token/token.service'

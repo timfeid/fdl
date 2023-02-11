@@ -1,9 +1,9 @@
-import { MediaType } from "@prisma/client";
-import { ArgsType, Field, Int, ObjectType, registerEnumType } from "type-graphql";
-import { GenreSchema } from "../genre/genre.schema";
+import { MediaType } from '@fdl/data'
+import { ArgsType, Field, Int, ObjectType, registerEnumType } from 'type-graphql'
+import { GenreSchema } from '../genre/genre.schema'
 
 registerEnumType(MediaType, {
-  name: 'MediaType'
+  name: 'MediaType',
 })
 
 @ObjectType()
@@ -51,8 +51,10 @@ export class MediaSchema {
   genres: GenreSchema[]
 }
 
-@ArgsType()
-export class CreateMediaArgs {
-  @Field()
-  imdbId: string
+export type CreateMediaByImdb = { imdbId: string }
+export type CreateMediaByTmdb = {
+  tmdbId: number
+  type: MediaType
 }
+
+export type CreateMediaArgs = CreateMediaByImdb | CreateMediaByTmdb

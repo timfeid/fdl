@@ -1,4 +1,4 @@
-import { Downloadable, DownloadableUrl, Media } from '@prisma/client'
+import { Downloadable, DownloadableUrl, Media } from '@fdl/data'
 import { ConfigService } from '../config/config.service'
 import { ExtractorTest } from './extractor'
 import { rarExtractor } from './extractors/rar.extractor'

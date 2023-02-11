@@ -13,6 +13,7 @@ generator provider {
 model Downloadable {
   id       String @id
   referrer String
+  guid     String @unique
   mediaId  String @map("media_id")
   title    String
   season   Int?
@@ -61,8 +62,8 @@ enum MediaType {
 
 model Media {
   id                    String    @id
-  imdbId                String    @unique @map("imdb_id")
-  tmdbId                Int       @map("tmdb_id")
+  imdbId                String?    @unique @map("imdb_id")
+  tmdbId                Int?       @unique @map("tmdb_id")
   type                  MediaType
   date                  String
   slug                  String

@@ -1,4 +1,4 @@
-import { User } from '@prisma/client'
+import { User } from '@fdl/data'
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import { Context } from 'koa'

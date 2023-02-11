@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@fdl/data'
 import faker from 'faker'
 import { Service } from 'typedi'
 

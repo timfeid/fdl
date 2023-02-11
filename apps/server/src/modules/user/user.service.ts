@@ -1,4 +1,4 @@
-import { PrismaClient, User, Prisma } from '@prisma/client'
+import { PrismaClient, User, Prisma } from '@fdl/data'
 import { Service } from 'typedi'
 import { PasswordService } from '../password/password.service'
 

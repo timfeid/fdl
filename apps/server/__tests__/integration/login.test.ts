@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client'
+import { PrismaClient, User } from '@fdl/data'
 import faker from 'faker'
 import Container from 'typedi'
 import { PasswordService } from '../../src/modules/password/password.service'
