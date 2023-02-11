@@ -17,7 +17,6 @@ export class MediaService {
   constructor(private readonly prisma: PrismaClient, private readonly tmdbService: TmdbService) {}
 
   async find(args: CreateMediaArgs) {
-    console.log(args)
     const imdbId = (args as CreateMediaByImdb).imdbId
     const tmdbId = (args as CreateMediaByTmdb).tmdbId
     const where = imdbId ? { imdbId } : { tmdbId }
@@ -78,7 +77,6 @@ export class MediaService {
         ),
       )
     }
-    console.log(data)
 
     const id = ulid()
     const media = await this.prisma.media.create({
